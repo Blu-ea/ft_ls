@@ -1,5 +1,17 @@
-#include <unistd.h>
+#include <stdio.h>
+
+#include "../incs/ft_ls.h"
 
 int main(){
-	write(1, "Hello world!\n", 13);
+	// char **file_list;
+
+	DIR *dir;
+	struct dirent* dirent;
+	dir = opendir(".");
+	while ((dirent = readdir(dir)) != NULL)
+	{
+		printf("%s  ", dirent->d_name);
+	}
+	closedir(dir);
+	;
 }
