@@ -4,4 +4,6 @@
 # include <unistd.h>
 # include <dirent.h>
 
+# include <stdlib.h>
+
 #endif //FT_LS_H
