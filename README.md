@@ -36,15 +36,15 @@ If the file is a symbolic links, the Pathname will be like `<link_name> -> <path
 
 ### - Flag `-a`
 
-The list of file listed will contain all file, including the hiden one ( exemple: `.env` )
+All, the list of file listed will contain all file, including the hiden one ( exemple: `.env` )
 
 ### - Flag `-r`
 
-The list order will be reverse. (show the bottom of the list first)
+Reverse, the list order will be reverse. (show the bottom of the list first)
 
 ### - Flag `-t`
 
-Will sort the list by time, aka.`newest first` 
+Time, will sort the list by time, aka.`newest first` 
 
 ---
 
@@ -56,13 +56,13 @@ Will sort the list by time, aka.`newest first`
  - stat
  - lstatid
  - getgrgid
-- getpwu
+ - getpwu
  - listxattr
  - getxattr
  - time
  - ctime
  - readlink
- - mallo
+ - malloc
  - free
  - perror
  - strerror
