@@ -50,3 +50,9 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Project binary
+ft_ls
+
+# Jetbrain IDE
+.idea
