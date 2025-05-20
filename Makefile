@@ -6,11 +6,13 @@ DIR_OBJS	:= .objs
 DIR_INCS	:= incs
 
 # **************************************************************************** #
-LST_SRCS	:= main.c
+LST_SRCS	:=	main.c\
+				get_file.c
 
 LST_OBJS	:=	$(LST_SRCS:.c=.o)
 
-LST_INCS	:= ft_ls.h
+LST_INCS	:=	ft_ls.h\
+				dir_content.h
 
 # **************************************************************************** #
 SRCS		:=	$(addprefix $(DIR_SRCS)/,$(LST_SRCS))
