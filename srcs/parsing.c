@@ -12,6 +12,7 @@ static void init_flags(t_flags* flag)
 	flag->all = false;
 	flag->reverse = false;
 	flag->time = false;
+	flag->_flag_error = false;
 	flag->paths = ft_calloc(2, sizeof(char*));
 	if (flag->paths == NULL)
 		return;
@@ -20,6 +21,13 @@ static void init_flags(t_flags* flag)
 
 void check_flags(t_flags *flags, const char* i_flags)
 {
+	if (!ft_memcmp("--help", i_flags, 7))
+	{
+		ft_free_2d_array(flags->paths);
+		flags->paths = NULL; // destroy the path to exit;
+		ft_printf(USAGE);
+		return;
+	}
 	size_t i = 1;
 	const size_t len = ft_strlen(i_flags);
 	while (i < len)
@@ -45,6 +53,8 @@ void check_flags(t_flags *flags, const char* i_flags)
 				ft_putstr_fd("\033[31mft_ls: invalid option -- '", 2);
 				ft_putchar_fd(i_flags[i], 2);
 				ft_putstr_fd("'\033[0m\n", 2);
+				flags->_flag_error = true;
+				return;
 		}
 		i++;
 	}
@@ -98,7 +108,7 @@ t_flags parsing(int argc, char **argv)
 		return flags;
 
 	int i = 1;
-	while (i < argc && flags.paths)
+	while (i < argc && flags.paths && !flags._flag_error )
 	{
 		if(argv[i][0] == '-')
 			check_flags(&flags, argv[i]);
