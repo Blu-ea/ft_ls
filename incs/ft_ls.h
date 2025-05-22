@@ -20,7 +20,8 @@
 	"	-a	Write out all directory entries, including those whose names begin with a <period> ('.').\n"\
 	"	-l	Write out in long format.\n"\
 	"	-r	Reverse the order of the sort to get reverse collating sequence oldest first, or smallest file size first depending on the other options given.\n"\
-	"	-t	Sort with the primary key being time modified (most recently modified first) and the secondary key being filename in the collating sequence.  For a symbolic link, the time used as the sort key is that of the symbolic link itself.\n"
+	"	-t	Sort with the primary key being time modified (most recently modified first) and the secondary key being filename in the collating sequence. For a symbolic link, the time used as the sort key is that of the symbolic link itself.\n"\
+	"	--help	Display this help and exit.\n"
 
 void get_file(char *filename);
 

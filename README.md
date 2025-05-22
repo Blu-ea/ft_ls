@@ -15,11 +15,12 @@ The files will be sorted alphabetically by default (see [-t](#flag--t) and [-r](
 > 
 > Options:
 > <dl>
-> <code>`-R`</code> <dd>Recursively list subdirectories encountered. When a symbolic link to a directory is encountered, the directory shall not be recursively listed.</dd>
-> <code>`-a`</code>	<dd>Write out all directory entries, including those whose names begin with a &lt;period&gt; ('.').</dd>
-> <code>`-l`</code>	<dd>Write out in long format.</dd>
-> <code>`-r`</code>	<dd>Reverse the order of the sort to get reverse collating sequence oldest first, or smallest file size first depending on the other options given.</dd>
-> <code>`-t`</code>	<dd>Sort with the primary key being time modified (most recently modified first) and the secondary key being filename in the collating sequence.  For a symbolic link, the time used as the sort key is that of the symbolic link itself.</dd>
+> <code>-R</code> <dd>Recursively list subdirectories encountered. When a symbolic link to a directory is encountered, the directory shall not be recursively listed.</dd>
+> <code>-a</code>	<dd>Write out all directory entries, including those whose names begin with a &lt;period&gt; ('.').</dd>
+> <code>-l</code>	<dd>Write out in long format.</dd>
+> <code>-r</code>	<dd>Reverse the order of the sort to get reverse collating sequence oldest first, or smallest file size first depending on the other options given.</dd>
+> <code>-t</code>	<dd>Sort with the primary key being time modified (most recently modified first) and the secondary key being filename in the collating sequence.  For a symbolic link, the time used as the sort key is that of the symbolic link itself.</dd>
+> <code>--help</code>	<dd> display this help and exit.</dd>
 > </dl>
 
 
