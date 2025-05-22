@@ -7,7 +7,8 @@ DIR_INCS	:= incs
 
 # **************************************************************************** #
 LST_SRCS	:=	main.c\
-				get_file.c
+				get_file.c\
+				parsing.c
 
 LST_OBJS	:=	$(LST_SRCS:.c=.o)
 
@@ -21,7 +22,7 @@ INCS		:=	$(addprefix $(DIR_INCS)/,$(LST_INCS))
 
 # **************************************************************************** #
 CC			:=	gcc
-CFLAGS		:=	-Wall -Wextra -Werror #-g3 -fsanitize=address
+CFLAGS		:=	-Wall -Wextra -Werror -g3 # -fsanitize=address
 
 # **************************************************************************** #
 ERASE	:=	\033[2K\r
@@ -41,14 +42,19 @@ END		:=	\033[0m
 # **************************************************************************** #
 all : $(NAME)
 
-$(NAME) : $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $@
+$(NAME) : libft $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) libft/libft.a -o $@
 
 $(DIR_OBJS)/%.o: $(DIR_SRCS)/%.c $(INCS) Makefile | $(DIR_OBJS)
-	$(CC) $(CFLAGS) -c $< -o $@ -I$(DIR_INCS)
+	$(CC) $(CFLAGS) -c $< -o $@ -I$(DIR_INCS) -Ilibft/includes
 
 $(DIR_OBJS) :
 	mkdir -p $(DIR_OBJS)
+
+libft :
+	git submodule init
+	git submodule update
+	$(MAKE) -C ./libft
 
 clean :
 	rm -rf $(DIR_OBJS)
@@ -59,5 +65,5 @@ fclean :
 
 re : fclean all
 
-.PHONY : all bonus clean fclean re
+.PHONY : all bonus clean fclean re libft
 # .SILENT :
