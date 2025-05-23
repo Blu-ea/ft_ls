@@ -8,22 +8,7 @@ void get_file(char *filename)
 }
 
 int main(int argc, char **argv){
-	DIR *dir;
-	struct dirent* dirent;
-
-	if (argc == 1)
-		dir = opendir(".");
-	else
-		dir = opendir(argv[1]);
-
-	while ((dirent = readdir(dir)) != NULL)
-	{
-		struct stat statbuf;
-		stat(dirent->d_name,&statbuf);
-		printf("owner of %s->%s\n", dirent->d_name, getpwuid(statbuf.st_uid)->pw_passwd);
-		// printf("%s  ", dirent->d_name);
-		;
-	}
-	printf("\n");
-	closedir(dir);
+	t_flags flags = parsing(argc, argv);
+	print_flags(flags);
+	ft_free_2d_array(flags.paths);
 }
