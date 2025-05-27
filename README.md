@@ -1,4 +1,4 @@
-# ft_ls
+# FT_LS
 This is a reproduction of the unix ls command in C 
 
 # What it does
@@ -82,3 +82,14 @@ Time, will sort the list by time, aka.`newest first`
  - perror
  - strerror
  - exit
+
+# How does it works
+
+1. Parse the input parms (flags/paths)
+2. Stat of the input path
+   1. If its a file, add it to file list
+   2. If its a folder, add it to file list
+      1. if -R is activated, 
+      2. read the dir and check all files 
+      3. if its a folder, add it to the list, go to `2.2.2` with it 
+3. display all the files and folder with the according flags

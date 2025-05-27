@@ -3,16 +3,16 @@
 
 #include <stdio.h> // printf
 
-# include <dirent.h>
 #include <iso646.h>
 # include <pwd.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <sys/stat.h>
 # include <sys/types.h>
+# include <dirent.h>
 
 # include "dir_content.h"
-#include <libft.h>
+#include "../libft/includes/libft.h"
 
 # define USAGE \
 	"Usage: ./ft_ls [OPTION] [FOLDER]\n"\
@@ -24,8 +24,6 @@
 	"	-t	Sort with the primary key being time modified (most recently modified first) and the secondary key being filename in the collating sequence.\n"\
 	"		For a symbolic link, the time used as the sort key is that of the symbolic link itself.\n"\
 	"	--help	Display this help and exit.\n"
-
-void get_file(char *filename);
 
 typedef struct s_flags
 {
@@ -40,6 +38,12 @@ typedef struct s_flags
 }	t_flags;
 
 t_flags	parsing(int, char**);
-void print_flags(t_flags pars); // todo: Remove before final push
+void	print_flags(t_flags pars); // todo: Remove before final push
+
+t_ls_lst_parms get_parms(char **path, bool recursive, bool all_flag);
+
+t_list*	get_file(char **path, bool recursive);
+
+void display_ls(t_list* chain_item, t_flags flags);
 
 #endif //FT_LS_H
