@@ -44,6 +44,8 @@ t_ls_lst_parms get_parms(char **path, bool recursive, bool all_flag);
 
 t_list*	get_file(char **path, bool recursive);
 
-void display_ls(t_list* chain_item, t_flags flags);
+void display_ls(t_ls_lst_parms lst_parms, t_flags flags);
+
+t_list *get_items_from_folder(char *pathname, bool all_flag);
 
 #endif //FT_LS_H

@@ -8,7 +8,8 @@ DIR_INCS	:= incs
 # **************************************************************************** #
 LST_SRCS	:=	main.c\
 				get_file.c\
-				parsing.c
+				parsing.c\
+				display.c
 
 LST_OBJS	:=	$(LST_SRCS:.c=.o)
 
@@ -53,7 +54,7 @@ $(DIR_OBJS) :
 
 libft :
 	git submodule init
-	git submodule update
+	git submodule update --remote --merge
 	$(MAKE) -C ./libft
 
 clean :
