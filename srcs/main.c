@@ -17,6 +17,9 @@ int main(int argc, char **argv){
 
 	t_ls_lst_parms lst_parms = get_parms(flags.paths, flags.recursive, flags.all);
 
+	sort_items(&lst_parms.files, flags.time);
+	// sort_items(lst_parms.dirs, flags.time);
+
 	display_ls(lst_parms, flags);
 	// ft_lstiter(lst_parms.dirs, (void (*)(void *))print_file);
 }

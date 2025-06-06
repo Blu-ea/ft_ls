@@ -84,7 +84,7 @@ void display_item(t_item *file, bool flag_list, size_t space_size)
 		ft_putchar_fd(' ', 1); /* Size of the file */
 		space_size -= ft_digitlen(f_stat.st_size);
 		for(size_t spaces = 0; spaces < space_size; spaces++)
-			ft_putchar_fd('.', 1);
+			ft_putchar_fd(' ', 1);
 		ft_put_unnbr_fd(f_stat.st_size, 1);
 
 		ft_putchar_fd(' ', 1); /* Date */

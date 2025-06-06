@@ -9,7 +9,8 @@ DIR_INCS	:= incs
 LST_SRCS	:=	main.c\
 				get_file.c\
 				parsing.c\
-				display.c
+				display.c\
+				sort.c
 
 LST_OBJS	:=	$(LST_SRCS:.c=.o)
 

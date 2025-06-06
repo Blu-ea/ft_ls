@@ -47,4 +47,6 @@ void display_ls(t_ls_lst_parms lst_parms, t_flags flags);
 
 t_list *get_items_from_folder(char *pathname, bool flag_all);
 
+void sort_items(t_list** lst, bool flag_time);
+
 #endif //FT_LS_H
