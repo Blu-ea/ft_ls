@@ -7,7 +7,7 @@
 bool compare_time(t_item* a, t_item* b);
 bool compare_name(t_item* a, t_item* b);
 
-void sort_items(t_list** lst, bool flag_time)
+void sort_items(t_list** lst, bool flag_time, bool flag_reverse)
 {
 	if (!lst)
 		return;
@@ -25,7 +25,7 @@ void sort_items(t_list** lst, bool flag_time)
 	it2 = (*lst)->next;
 	while (it2 != NULL)
 	{
-		if (compare(it->content, it2->content))
+		if (compare(it->content, it2->content) != flag_reverse)
 		{
 			if (previous == NULL)
 				*lst = it2;

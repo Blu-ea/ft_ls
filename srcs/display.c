@@ -41,7 +41,10 @@ void print_ls_time(struct timespec ts)
 	write(1, time_str + 8, 3); /* Day */
 
 	if (*last_update < now - 15552000 || *last_update > now + 60)
+	{
+		write(1, " " , 1); /* Spacing */
 		write(1, time_str + 20 , 4); /* Year */
+	}
 	else
 		write(1, time_str + 11 , 5); /* Time */
 }
@@ -90,7 +93,7 @@ void display_item(t_item *file, bool flag_list, size_t space_size)
 		ft_putchar_fd(' ', 1); /* Date */
 		print_ls_time(f_stat.st_mtim);
 
-		ft_putchar_fd(' ', 1); /* File name */
+		ft_putstr_fd("  ", 1); /* File name */
 		ft_putstr_fd(file->pathname, 1); // todo : handles links
 	}
 	else
@@ -107,7 +110,7 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 	if (chain_items.files)
 	{
 		t_list *files = chain_items.files;
-		sort_items(&files, flags.time);
+		sort_items(&files, flags.time, flags.reverse);
 		while(files)
 		{
 			display_item(files->content, flags.list, chain_items.max_dg_lenght);
@@ -141,7 +144,7 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 				first = false;
 				ft_printf("%s:\n", ((t_item*)dir->content)->pathname);
 			}
-			sort_items(&item_to_print, flags.time);
+			sort_items(&item_to_print, flags.time, flags.reverse);
 			while (item_to_print)
 			{
 				display_item(item_to_print->content, flags.list, 10);
