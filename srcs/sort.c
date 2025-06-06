@@ -39,9 +39,12 @@ void sort_items(t_list** lst, bool flag_time)
 			it = *lst;
 			it2 = it->next;
 		}
-		previous = it;
-		it = it->next;
-		it2 = it2->next;
+		else
+		{
+			previous = it;
+			it = it->next;
+			it2 = it2->next;
+		}
 	}
 }
 
