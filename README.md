@@ -6,7 +6,7 @@ This is a reproduction of the unix ls command in C
 `ls` list "all" the files present in a certain directory.
 
 By default, the hidden files will not be showed (see [-a](#flag--a)).
-The files will be sorted alphabetically by default (see [-t](#flag--t) and [-r](#flag--r-1)).
+The files will be sorted by byte-by-byte (by the ASCII table) by default (see [-t](#flag--t) and [-r](#flag--r-1)).
 
 > [!NOTE]  
 > See `--help` to see the usage.
