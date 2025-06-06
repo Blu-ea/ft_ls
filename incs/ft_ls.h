@@ -3,7 +3,6 @@
 
 #include <stdio.h> // printf
 
-#include <iso646.h>
 # include <pwd.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -46,6 +45,6 @@ t_list*	get_file(char **path, bool recursive);
 
 void display_ls(t_ls_lst_parms lst_parms, t_flags flags);
 
-t_list *get_items_from_folder(char *pathname, bool all_flag);
+t_list *get_items_from_folder(char *pathname, bool flag_all);
 
 #endif //FT_LS_H
