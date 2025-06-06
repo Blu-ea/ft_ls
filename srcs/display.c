@@ -107,6 +107,7 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 	if (chain_items.files)
 	{
 		t_list *files = chain_items.files;
+		sort_items(&files, flags.time);
 		while(files)
 		{
 			display_item(files->content, flags.list, chain_items.max_dg_lenght);
@@ -140,6 +141,7 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 				first = false;
 				ft_printf("%s:\n", ((t_item*)dir->content)->pathname);
 			}
+			sort_items(&item_to_print, flags.time);
 			while (item_to_print)
 			{
 				display_item(item_to_print->content, flags.list, 10);
