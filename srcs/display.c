@@ -259,7 +259,7 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 			if (flags.recursive)
 			{
 // void recursive_get(t_list** parm_dir ,char *folder_path, bool all_flag)
-				recursive_get();
+				// recursive_get();
 			}
 			// printf("test1?\n");
 			// ft_lstiter(dir, (void (*)(void *))print_file);

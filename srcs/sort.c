@@ -25,7 +25,7 @@ void sort_items(t_list** lst, bool flag_time, bool flag_reverse)
 	it2 = (*lst)->next;
 	while (it2 != NULL)
 	{
-		if (compare(it->content, it2->content, flag_reverse)) // todo : Breaks if `it->content == it2->content` with -r
+		if (compare(it->content, it2->content, flag_reverse))
 		{
 			if (previous == NULL)
 				*lst = it2;
@@ -50,15 +50,24 @@ void sort_items(t_list** lst, bool flag_time, bool flag_reverse)
 
 bool compare_time(t_item* a, t_item* b, bool flag_reverse)
 {
-	if (a->item_stat.st_mtim.tv_sec < b->item_stat.st_mtim.tv_sec ||
-		(a->item_stat.st_mtim.tv_sec == b->item_stat.st_mtim.tv_sec && a->item_stat.st_mtim.tv_nsec < b->item_stat.st_mtim.tv_nsec))
-		return flag_reverse;
-	return !flag_reverse;
+	long int const a_sec = a->item_stat.st_mtim.tv_sec;
+	long int const b_sec = b->item_stat.st_mtim.tv_sec;
+	long int const a_nsec = a->item_stat.st_mtim.tv_nsec;
+	long int const b_nsec = b->item_stat.st_mtim.tv_nsec;
+	if (a_sec == b_sec && a_nsec == b_nsec)
+		return false;
+
+	if (a_sec >= b_sec && (a_sec != b_sec || a_nsec > b_nsec))
+		return !flag_reverse;
+	return flag_reverse;
 }
 
 bool compare_name(t_item* a, t_item* b, bool flag_reverse)
 {
-	if (ft_strcmp(a->pathname, b->pathname) > 0)
+	int const cmp = ft_strcmp(a->pathname, b->pathname);
+	if (cmp == 0)
+		return false;
+	if (cmp > 0)
 		return !flag_reverse;
 	return flag_reverse;
 }
