@@ -161,7 +161,7 @@ void display_item(t_item *file, bool flag_list, t_list_padding padding, char pat
 		time_display(item_stat.st_mtim);
 
 		ft_putstr_fd(" ", 1); /* File name */
-		ft_putstr_fd(file->pathname, 1); // todo : handles links
+		ft_putstr_fd(file->pathname, 1);
 		if (S_ISLNK(item_stat.st_mode))
 		{
 			ft_putstr_fd(" -> ", 1);
