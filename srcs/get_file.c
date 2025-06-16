@@ -27,7 +27,7 @@ void recursive_get(t_list** parm_dir ,char *folder_path, bool all_flag)
 				fullpath[ft_strlen(folder_path)] = '/';
 			ft_memcpy(fullpath + ft_strlen(fullpath), _r_content->d_name, ft_strlen( _r_content->d_name) );
 			current_item->pathname = ft_strdup(fullpath);
-			stat(fullpath, &current_item->item_stat);
+			lstat(fullpath, &current_item->item_stat);
 			t_list *new_item = ft_lstnew(current_item);
 			if (!new_item)
 			{
@@ -50,7 +50,7 @@ t_ls_lst_parms get_parms(char **path, const bool recursive, const bool all_flag)
 	while (path[++i])
 	{
 		struct stat current_stats;
-		int stats_ret = stat(path[i], &current_stats);
+		int stats_ret = lstat(path[i], &current_stats);
 		if (stats_ret == -1)
 		{
 			ft_putstr_fd("ft_ls: cannot access `", 2);
@@ -116,7 +116,7 @@ t_list *get_items_from_folder(char *pathname, bool flag_all)
 			continue;
 		ft_memcpy(fullpath + pathname_len, _r_content->d_name, ft_strlen(_r_content->d_name) + 1);
 		struct stat file_stats;
-		if (stat(fullpath, &file_stats) == -1)
+		if (lstat(fullpath, &file_stats) == -1)
 		{
 			// printf(fullpath);
 			// printf(" | %s   | %s-\n", pathname , _r_content->d_name);

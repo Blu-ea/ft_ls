@@ -49,4 +49,6 @@ t_list *get_items_from_folder(char *pathname, bool flag_all);
 
 void sort_items(t_list** lst, bool flag_time, bool flag_reverse);
 
+void recursive_get(t_list** parm_dir ,char *folder_path, bool all_flag);
+
 #endif //FT_LS_H

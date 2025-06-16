@@ -21,4 +21,12 @@ typedef struct s_item_list
 }	t_item;
 
 
+typedef struct s_list_padding
+{
+	int link;
+	int user;
+	int group;
+	int size;
+}	t_list_padding;
+
 #endif //DIR_CONTENT_H

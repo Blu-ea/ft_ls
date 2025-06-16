@@ -4,14 +4,14 @@
 
 #include "../incs/ft_ls.h"
 
-bool compare_time(t_item* a, t_item* b);
-bool compare_name(t_item* a, t_item* b);
+bool compare_time(t_item* a, t_item* b, bool flag_reverse);
+bool compare_name(t_item* a, t_item* b, bool flag_reverse);
 
 void sort_items(t_list** lst, bool flag_time, bool flag_reverse)
 {
 	if (!lst)
 		return;
-	bool (*compare)(t_item* a, t_item* b);
+	bool (*compare)(t_item* a, t_item* b, bool flag_reverse);
 	if (flag_time)
 		compare = compare_time;
 	else
@@ -25,7 +25,7 @@ void sort_items(t_list** lst, bool flag_time, bool flag_reverse)
 	it2 = (*lst)->next;
 	while (it2 != NULL)
 	{
-		if (compare(it->content, it2->content) != flag_reverse)
+		if (compare(it->content, it2->content, flag_reverse)) // todo : Breaks if `it->content == it2->content` with -r
 		{
 			if (previous == NULL)
 				*lst = it2;
@@ -48,16 +48,17 @@ void sort_items(t_list** lst, bool flag_time, bool flag_reverse)
 	}
 }
 
-bool compare_time(t_item* a, t_item* b)
+bool compare_time(t_item* a, t_item* b, bool flag_reverse)
 {
 	if (a->item_stat.st_mtim.tv_sec < b->item_stat.st_mtim.tv_sec ||
 		(a->item_stat.st_mtim.tv_sec == b->item_stat.st_mtim.tv_sec && a->item_stat.st_mtim.tv_nsec < b->item_stat.st_mtim.tv_nsec))
-		return true;
-	return false;
+		return flag_reverse;
+	return !flag_reverse;
 }
-bool compare_name(t_item* a, t_item* b)
+
+bool compare_name(t_item* a, t_item* b, bool flag_reverse)
 {
 	if (ft_strcmp(a->pathname, b->pathname) > 0)
-		return true;
-	return false;
+		return !flag_reverse;
+	return flag_reverse;
 }
