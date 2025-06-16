@@ -15,7 +15,7 @@ typedef struct s_ls_lst_parms
 
 typedef struct s_item_list
 {
-	char* pathname;
+	char pathname [PATH_MAX];
 	struct stat item_stat;
 
 }	t_item;

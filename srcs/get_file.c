@@ -26,7 +26,7 @@ void recursive_get(t_list** parm_dir ,char *folder_path, bool all_flag)
 			if (fullpath[ft_strlen(folder_path) - 1] != '/')
 				fullpath[ft_strlen(folder_path)] = '/';
 			ft_memcpy(fullpath + ft_strlen(fullpath), _r_content->d_name, ft_strlen( _r_content->d_name) );
-			current_item->pathname = ft_strdup(fullpath);
+			ft_memcpy(current_item->pathname, fullpath, ft_strlen(fullpath));
 			lstat(fullpath, &current_item->item_stat);
 			t_list *new_item = ft_lstnew(current_item);
 			if (!new_item)
@@ -60,17 +60,11 @@ t_ls_lst_parms get_parms(char **path, const bool recursive, const bool all_flag)
 		}
 
 		current_item = ft_calloc(1, sizeof(t_item));
-		current_item->pathname = path[i];
+		ft_memcpy(current_item->pathname, path[i], ft_strlen(path[i]));
 		current_item->item_stat = current_stats;
 
 		if (S_ISDIR(current_stats.st_mode))
-		{
 			ft_lstadd_front(&parm.dirs, ft_lstnew(current_item));
-			(void) recursive;
-			(void) all_flag;
-			// if (recursive) // todo: Recursivity need to be done during the rendering
-				// recursive_get(&parm.dirs , path[i], all_flag);
-		}
 		else
 		{
 			ft_lstadd_front(&parm.files, ft_lstnew(current_item));
@@ -130,7 +124,7 @@ t_list *get_items_from_folder(char *pathname, bool flag_all)
 			return NULL; // todo : clear the t_list*
 		}
 
-		current_item->pathname = ft_strdup(_r_content->d_name);
+		ft_memcpy(current_item->pathname, _r_content->d_name, ft_strlen(_r_content->d_name));
 		current_item->item_stat = file_stats;
 
 		t_list *new_item = ft_lstnew(current_item);

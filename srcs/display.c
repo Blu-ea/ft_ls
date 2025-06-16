@@ -221,10 +221,54 @@ t_list_padding get_padding(t_list *items)
 	return padding;
 }
 
-// void display_folder_content(t_list folders, t_flags flags)
-// {
+void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, bool first)
+{
+	t_list *item_to_print = get_items_from_folder(dir->pathname, flags.all);
+	t_list *root_item = item_to_print;
+	if (!item_to_print)
+	{
+		return;
+	}
+	if (show_name_folder || flags.recursive)
+	{
+		if (!first)
+			ft_putchar_fd('\n', 1);
+		first = false;
+		ft_printf("%s:\n", dir->pathname);
+	}
+	sort_items(&item_to_print, flags.time, flags.reverse);
+	const t_list_padding padding = get_padding(item_to_print);
+	while (item_to_print) // first we print the item
+	{
+		display_item(item_to_print->content, flags.list, padding, dir->pathname);
+		item_to_print = item_to_print->next;
+		if (flags.list)
+			ft_putchar_fd('\n', 1);
+	}
+	if (flags.recursive) // and **ONLY** when all the items are print out, we open the folder recursivly;
+	{
+		while (root_item) // check for the item, too see if there is a folder
+		{
+			t_item *recursive_item = root_item->content;
+			if (S_ISDIR(recursive_item->item_stat.st_mode))
+			{
+				bool is_there_slash = 0;
+				if (dir->pathname[ft_strlen(dir->pathname) - 1] != '/')
+					is_there_slash = 1;
+				ft_memmove(recursive_item->pathname + ft_strlen(dir->pathname) + is_there_slash, recursive_item->pathname, ft_strlen(recursive_item->pathname));
+				ft_memcpy(recursive_item->pathname, dir->pathname, ft_strlen(dir->pathname));
+				if (is_there_slash)
+					recursive_item->pathname[ft_strlen(dir->pathname)] = '/';
 
-// }
+				// printf("%s\n", recursive_item->pathname);
+				display_folder_content(recursive_item, flags, true, false);
+			}
+			root_item = root_item->next;
+		}
+	}
+	if (!flags.list)
+		ft_putchar_fd('\n', 1);
+}
 
 void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 {
@@ -256,40 +300,7 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 		sort_items(&dir, flags.time, flags.reverse);
 		while(dir)
 		{
-			if (flags.recursive)
-			{
-// void recursive_get(t_list** parm_dir ,char *folder_path, bool all_flag)
-				// recursive_get();
-			}
-			// printf("test1?\n");
-			// ft_lstiter(dir, (void (*)(void *))print_file);
-			t_list *item_to_print = get_items_from_folder(((t_item*)dir->content)->pathname, flags.all);
-			// printf("test2?\n");
-			if (!item_to_print)
-			{
-				dir = dir->next;
-				continue;
-			}
-			if (show_name_folder)
-			{
-				if (!first)
-					ft_putchar_fd('\n', 1);
-				first = false;
-				ft_printf("%s:\n", ((t_item*)dir->content)->pathname);
-			}
-			sort_items(&item_to_print, flags.time, flags.reverse);
-			const t_list_padding padding = get_padding(item_to_print);
-			while (item_to_print)
-			{
-				display_item(item_to_print->content, flags.list, padding, ((t_item*)dir->content)->pathname);
-				item_to_print = item_to_print->next;
-				if (flags.list)
-					ft_putchar_fd('\n', 1);
-			}
-
-			if (!flags.list)
-				ft_putchar_fd('\n', 1);
-
+			display_folder_content(dir->content, flags, show_name_folder, first);
 
 			dir = dir->next;
 		}
