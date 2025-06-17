@@ -15,7 +15,7 @@ int main(int argc, char **argv){
 	if (flags.paths == NULL || flags._flag_error)
 		return 1; // An error append.
 
-	t_ls_lst_parms lst_parms = get_parms(flags.paths, flags.recursive, flags.all);
+	t_ls_lst_parms lst_parms = get_parms(flags.paths);
 
 	display_ls(lst_parms, flags);
 	// ft_lstiter(lst_parms.dirs, (void (*)(void *))print_file);

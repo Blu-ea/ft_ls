@@ -41,9 +41,9 @@ void recursive_get(t_list** parm_dir ,char *folder_path, bool all_flag)
 	closedir(dir);
 }
 
-t_ls_lst_parms get_parms(char **path, const bool recursive, const bool all_flag)
+t_ls_lst_parms get_parms(char **path)
 {
-	t_ls_lst_parms parm = {NULL, 0,NULL};
+	t_ls_lst_parms parm = {NULL, NULL};
 	t_item* current_item;
 	int i = -1;
 
@@ -66,16 +66,7 @@ t_ls_lst_parms get_parms(char **path, const bool recursive, const bool all_flag)
 		if (S_ISDIR(current_stats.st_mode))
 			ft_lstadd_front(&parm.dirs, ft_lstnew(current_item));
 		else
-		{
 			ft_lstadd_front(&parm.files, ft_lstnew(current_item));
-			size_t n = current_stats.st_size;
-			size_t len = 1;
-			while (n >= 10) {
-				n /= 10;
-				len++;
-			}
-			if (len > parm.max_dg_lenght) parm.max_dg_lenght = len;
-		}
 	}
 	return parm;
 }

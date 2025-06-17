@@ -224,7 +224,6 @@ t_list_padding get_padding(t_list *items)
 void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, bool first)
 {
 	t_list *item_to_print = get_items_from_folder(dir->pathname, flags.all);
-	t_list *root_item = item_to_print;
 	if (!item_to_print)
 	{
 		return;
@@ -236,7 +235,24 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 		first = false;
 		ft_printf("%s:\n", dir->pathname);
 	}
+	if (flags.list)
+	{
+		ft_putstr_fd("total ", 1);
+		t_list *root_item = item_to_print;
+		long int total = 0;
+		while (item_to_print)
+		{
+			t_item *item = item_to_print->content;
+			if (strcmp(item->pathname, ".") != 0 && strcmp(item->pathname, "..") != 0)
+				total += item->item_stat.st_blocks ;  // By man 7 inode : the size of a block is not defined by POSIX.1 so it may be 1024.
+			item_to_print = item_to_print->next;
+		}
+		ft_putnbr_fd((total), 1);
+		ft_putchar_fd('\n', 1);
+		item_to_print = root_item;
+	}
 	sort_items(&item_to_print, flags.time, flags.reverse);
+	t_list *root_item = item_to_print;
 	const t_list_padding padding = get_padding(item_to_print);
 	while (item_to_print) // first we print the item
 	{
@@ -245,12 +261,18 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 		if (flags.list)
 			ft_putchar_fd('\n', 1);
 	}
+	if (!flags.list)
+		ft_putchar_fd('\n', 1);
 	if (flags.recursive) // and **ONLY** when all the items are print out, we open the folder recursivly;
 	{
+		// printf("%d", ft_lstsize(root_item));
 		while (root_item) // check for the item, too see if there is a folder
 		{
 			t_item *recursive_item = root_item->content;
-			if (S_ISDIR(recursive_item->item_stat.st_mode))
+			// printf("\033[7m%s\033[0m", recursive_item->pathname);
+
+			if (S_ISDIR(recursive_item->item_stat.st_mode) && strcmp(recursive_item->pathname, ".") != 0
+			&& strcmp(recursive_item->pathname, "..") != 0)
 			{
 				bool is_there_slash = 0;
 				if (dir->pathname[ft_strlen(dir->pathname) - 1] != '/')
@@ -260,14 +282,15 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 				if (is_there_slash)
 					recursive_item->pathname[ft_strlen(dir->pathname)] = '/';
 
-				// printf("%s\n", recursive_item->pathname);
+				// printf("\033[7m%s\033[0m\n", recursive_item->pathname);
 				display_folder_content(recursive_item, flags, true, false);
 			}
+			// else
+				// printf("\033[31mNO !\033[0m\n");
 			root_item = root_item->next;
+			// printf("\033[33m%p\033[0m\n", root_item);
 		}
 	}
-	if (!flags.list)
-		ft_putchar_fd('\n', 1);
 }
 
 void display_ls(t_ls_lst_parms chain_items, t_flags flags)
