@@ -101,7 +101,6 @@ void add_path(t_flags* flags, const char *new_path)
 
 t_flags parsing(int argc, char **argv)
 {
-	(void)argv;
 	t_flags flags;
 	init_flags(&flags);
 	if (flags.paths == NULL || flags.paths[0] == NULL)

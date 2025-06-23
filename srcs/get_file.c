@@ -1,3 +1,5 @@
+#include <errno.h>
+
 #include "../incs/ft_ls.h"
 
 
@@ -113,8 +115,10 @@ t_list *get_items_from_folder(char *pathname, bool flag_all)
 		current_item = ft_calloc(1, sizeof(t_item));
 		if (!current_item)
 		{
-			ft_putstr_fd("ft_ls: out of memory", 2);
-			return NULL; // todo : clear the t_list*
+			perror("ft_ls: out of memory");
+			ft_lstclear(&list_folder, free);
+			closedir(dir);
+			return (void*) -1;
 		}
 
 		ft_memcpy(current_item->pathname, _r_content->d_name, ft_strlen(_r_content->d_name));
@@ -123,8 +127,11 @@ t_list *get_items_from_folder(char *pathname, bool flag_all)
 		t_list *new_item = ft_lstnew(current_item);
 		if (!new_item)
 		{
-			ft_putstr_fd("ft_ls: out of memory", 2);
-			return NULL; // todo: clear the t_list*
+			perror("ft_ls: out of memory");
+			free(current_item);
+			ft_lstclear(&list_folder, free);
+			closedir(dir);
+			return (void*) -1;
 		}
 		ft_lstadd_front(&list_folder, new_item);
 	}

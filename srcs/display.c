@@ -246,6 +246,7 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 		first = false;
 		ft_printf("%s:\n", dir->pathname);
 	}
+	t_list_padding padding = {0,0,0,0};
 	if (flags.list)
 	{
 		ft_putstr_fd("total ", 1);
@@ -261,10 +262,11 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 		ft_putnbr_fd(total / 2, 1); // i don't know why but ls seems to print for 1k blocks, tho POSIX define them as size of 512.
 		ft_putchar_fd('\n', 1);
 		item_to_print = root_item;
+
+		padding = get_padding(item_to_print, flags.list);
 	}
 	sort_items(&item_to_print, flags.time, flags.reverse);
 	t_list *root_item = item_to_print;
-	const t_list_padding padding = get_padding(item_to_print, flags.list);
 	while (item_to_print) // first we print the items
 	{
 		display_item(item_to_print->content, flags.list, padding, dir->pathname);
@@ -323,8 +325,7 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 		}
 		show_name_folder = true;
 		first = false;
-		if (chain_items.dirs)
-			ft_putchar_fd('\n', 1);
+		ft_putchar_fd('\n', 1);
 	}
 	if (chain_items.dirs)
 	{
