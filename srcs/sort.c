@@ -9,14 +9,13 @@ bool compare_name(t_item* a, t_item* b, bool flag_reverse);
 
 void sort_items(t_list** lst, bool flag_time, bool flag_reverse)
 {
-	if (!lst)
+	if (!lst || !*lst)
 		return;
 	bool (*compare)(t_item* a, t_item* b, bool flag_reverse);
 	if (flag_time)
 		compare = compare_time;
 	else
 		compare = compare_name;
-	// t_list* tmp;
 	t_list* previous;
 	t_list* it;
 	t_list* it2;

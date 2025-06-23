@@ -74,7 +74,7 @@ void time_display(struct timespec ts)
 	write(1, time_str + 4, 4); /* Month */
 	write(1, time_str + 8, 3); /* Day */
 
-	if (*last_update < now - 15552000 || *last_update > now + 60)
+	if (*last_update < now - 15768000 || *last_update > now + 60)
 	{
 		write(1, " " , 1); /* Spacing */
 		write(1, time_str + 20 , 4); /* Year */
@@ -93,39 +93,43 @@ void link_n_display(int padding, __nlink_t link_n)
 
 void owner_display(int padding, __uid_t uid)
 {
-	const struct passwd* user_info = getpwuid(uid);
+	static const struct passwd* user_info = NULL;
+	if (!user_info || user_info->pw_gid != uid)
+		user_info = getpwuid(uid);
 	if (user_info)
 	{
+		ft_putstr_fd(user_info->pw_name, 1);
 		padding -= ft_strlen(user_info->pw_name);
 		for(int spaces = 0; spaces < padding; spaces++)
 			ft_putchar_fd(' ', 1);
-		ft_putstr_fd(user_info->pw_name, 1);
 	}
 	else
 	{
+		ft_put_unnbr_fd(uid, 1);
 		padding -= ft_digitlen(uid);
 		for(int spaces = 0; spaces < padding; spaces++)
 			ft_putchar_fd(' ', 1);
-		ft_put_unnbr_fd(uid, 1);
 	}
 }
 
 void group_display(int padding, __gid_t gid)
 {
-	const struct group* group_info = getgrgid(gid);
+	static const struct group* group_info = NULL;
+	if (!group_info || group_info->gr_gid != gid)
+		group_info = getgrgid(gid);
 	if (group_info)
 	{
+		ft_putstr_fd(group_info->gr_name, 1);
 		padding -= ft_strlen(group_info->gr_name);
 		for(int spaces = 0; spaces < padding; spaces++)
 			ft_putchar_fd(' ', 1);
-		ft_putstr_fd(group_info->gr_name, 1);
 	}
 	else
 	{
+		ft_put_unnbr_fd(gid, 1);
 		padding -= ft_digitlen(gid);
 		for(int spaces = 0; spaces < padding; spaces++)
 			ft_putchar_fd(' ', 1);
-		ft_put_unnbr_fd(gid, 1);
 	}
 }
 void size_display(int padding, __off_t size)
@@ -167,11 +171,14 @@ void display_item(t_item *file, bool flag_list, t_list_padding padding, char pat
 			ft_putstr_fd(" -> ", 1);
 			char link_path[PATH_MAX] = {};
 			char link_result[PATH_MAX] = {};
-			ft_memcpy(link_path , path, ft_strlen(file->pathname));
+			ft_memcpy(link_path , path, ft_strlen(path));
+			if (link_path[ft_strlen(link_path) - 1] != '/')
+				link_path[ft_strlen(link_path)] = '/';
 			ft_memcpy(link_path + ft_strlen(link_path), file->pathname, ft_strlen(file->pathname));
 			if (readlink(link_path, link_result, PATH_MAX) == -1)
 			{
-				perror("ft_ls:");
+				ft_putstr_fd("ft_ls: ", 2);
+				perror(link_path);
 				return; // todo : error ?
 			}
 			ft_putstr_fd(link_result, 1);
@@ -179,13 +186,15 @@ void display_item(t_item *file, bool flag_list, t_list_padding padding, char pat
 	}
 	else
 	{
-		ft_printf("%s  ", file->pathname);
+		ft_putstr_fd(file->pathname, 1);
 	}
 }
 
-t_list_padding get_padding(t_list *items)
+t_list_padding get_padding(t_list *items, bool flag_list)
 {
 	t_list_padding padding = {0,0,0,0};
+	if (!flag_list)
+		return padding;
 	while (items)
 	{
 		t_item *item = items->content;
@@ -198,7 +207,9 @@ t_list_padding get_padding(t_list *items)
 		if (size > padding.size)
 			padding.size = size;
 
-		const struct passwd* user_info = getpwuid(item->item_stat.st_uid);
+		static struct passwd* user_info = NULL;
+		if (!user_info || user_info->pw_gid != item->item_stat.st_uid)
+			user_info = getpwuid(item->item_stat.st_uid);
 		int user = 0;
 		if (user_info)
 			user = ft_strlen(user_info->pw_name);
@@ -207,7 +218,9 @@ t_list_padding get_padding(t_list *items)
 		if (user > padding.user)
 			padding.user = user;
 
-		const struct group* group_info =  getgrgid(item->item_stat.st_gid);
+		static const struct group* group_info = NULL;
+		if (!group_info || group_info->gr_gid != item->item_stat.st_gid)
+			group_info = getgrgid(item->item_stat.st_gid);
 		int group = 0;
 		if (group_info)
 			group = ft_strlen(group_info->gr_name);
@@ -224,10 +237,8 @@ t_list_padding get_padding(t_list *items)
 void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, bool first)
 {
 	t_list *item_to_print = get_items_from_folder(dir->pathname, flags.all);
-	if (!item_to_print)
-	{
+	if (item_to_print == (void*) -1)
 		return;
-	}
 	if (show_name_folder || flags.recursive)
 	{
 		if (!first)
@@ -243,20 +254,22 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 		while (item_to_print)
 		{
 			t_item *item = item_to_print->content;
-			if (strcmp(item->pathname, ".") != 0 && strcmp(item->pathname, "..") != 0)
-				total += item->item_stat.st_blocks ;  // By man 7 inode : the size of a block is not defined by POSIX.1 so it may be 1024.
+			if (ft_memcmp(item->pathname, ".", 2) != 0 && ft_memcmp(item->pathname, "..", 3) != 0)
+				total += item->item_stat.st_blocks;  // By man 7 inode : the size of a block is not defined by POSIX.1 so it may be 1024.
 			item_to_print = item_to_print->next;
 		}
-		ft_putnbr_fd((total), 1);
+		ft_putnbr_fd(total / 2, 1); // i don't know why but ls seems to print for 1k blocks, tho POSIX define them as size of 512.
 		ft_putchar_fd('\n', 1);
 		item_to_print = root_item;
 	}
 	sort_items(&item_to_print, flags.time, flags.reverse);
 	t_list *root_item = item_to_print;
-	const t_list_padding padding = get_padding(item_to_print);
-	while (item_to_print) // first we print the item
+	const t_list_padding padding = get_padding(item_to_print, flags.list);
+	while (item_to_print) // first we print the items
 	{
 		display_item(item_to_print->content, flags.list, padding, dir->pathname);
+		if (!flags.list && item_to_print->next)
+			write(1, "  ", 2);
 		item_to_print = item_to_print->next;
 		if (flags.list)
 			ft_putchar_fd('\n', 1);
@@ -265,14 +278,13 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 		ft_putchar_fd('\n', 1);
 	if (flags.recursive) // and **ONLY** when all the items are print out, we open the folder recursivly;
 	{
-		// printf("%d", ft_lstsize(root_item));
-		while (root_item) // check for the item, too see if there is a folder
+		item_to_print = root_item;
+		while (item_to_print) // check for the item, too see if there is a folder
 		{
-			t_item *recursive_item = root_item->content;
-			// printf("\033[7m%s\033[0m", recursive_item->pathname);
+			t_item *recursive_item = item_to_print->content;
 
-			if (S_ISDIR(recursive_item->item_stat.st_mode) && strcmp(recursive_item->pathname, ".") != 0
-			&& strcmp(recursive_item->pathname, "..") != 0)
+			if (S_ISDIR(recursive_item->item_stat.st_mode) && ft_memcmp(recursive_item->pathname, ".", 2) != 0
+			&& ft_memcmp(recursive_item->pathname, "..", 3) != 0)
 			{
 				bool is_there_slash = 0;
 				if (dir->pathname[ft_strlen(dir->pathname) - 1] != '/')
@@ -281,16 +293,12 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 				ft_memcpy(recursive_item->pathname, dir->pathname, ft_strlen(dir->pathname));
 				if (is_there_slash)
 					recursive_item->pathname[ft_strlen(dir->pathname)] = '/';
-
-				// printf("\033[7m%s\033[0m\n", recursive_item->pathname);
 				display_folder_content(recursive_item, flags, true, false);
 			}
-			// else
-				// printf("\033[31mNO !\033[0m\n");
-			root_item = root_item->next;
-			// printf("\033[33m%p\033[0m\n", root_item);
+			item_to_print = item_to_print->next;
 		}
 	}
+	ft_lstclear(&root_item, free);
 }
 
 void display_ls(t_ls_lst_parms chain_items, t_flags flags)
@@ -301,12 +309,14 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 	{
 		t_list *files = chain_items.files;
 		sort_items(&files, flags.time, flags.reverse);
-		t_list_padding padding = get_padding(files);
+		t_list_padding padding = get_padding(files, flags.list);
 		char path[PATH_MAX] = {};
 		path[0] = '.';
 		while(files)
 		{
 			display_item(files->content, flags.list, padding, path);
+			if (!flags.list && files->next)
+				write(1, "  ", 2);
 			files = files->next;
 			if (flags.list)
 				ft_putchar_fd('\n', 1);

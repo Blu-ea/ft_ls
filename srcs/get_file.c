@@ -6,7 +6,7 @@ void recursive_get(t_list** parm_dir ,char *folder_path, bool all_flag)
 	DIR* dir = opendir(folder_path);
 	if (!dir)
 	{
-		ft_putstr_fd("ft_ls: cannot access `", 2);
+		ft_putstr_fd("ft_ls: cannot open directory `", 2);
 		ft_putstr_fd(folder_path, 2);
 		perror("`");
 		return;
@@ -15,8 +15,8 @@ void recursive_get(t_list** parm_dir ,char *folder_path, bool all_flag)
 	{
 		if (_r_content->d_type == DT_DIR
 			&& (_r_content->d_name[0] != '.'  || all_flag)
-			&& strcmp(_r_content->d_name, ".") != 0
-			&& strcmp(_r_content->d_name, "..") != 0)
+			&& ft_memcmp(_r_content->d_name, ".", 2) != 0
+			&& ft_memcmp(_r_content->d_name, "..", 3) != 0)
 		{
 			t_item* current_item;
 			current_item = ft_calloc(1, sizeof(t_item));
@@ -63,10 +63,16 @@ t_ls_lst_parms get_parms(char **path)
 		ft_memcpy(current_item->pathname, path[i], ft_strlen(path[i]));
 		current_item->item_stat = current_stats;
 
+		t_list *new_item = ft_lstnew(current_item);
+		if (!new_item)
+		{
+			perror("ft_ls: Out of memory");
+			exit(EXIT_FAILURE);
+		}
 		if (S_ISDIR(current_stats.st_mode))
-			ft_lstadd_front(&parm.dirs, ft_lstnew(current_item));
+			ft_lstadd_front(&parm.dirs, new_item);
 		else
-			ft_lstadd_front(&parm.files, ft_lstnew(current_item));
+			ft_lstadd_front(&parm.files, new_item);
 	}
 	return parm;
 }
@@ -81,10 +87,10 @@ t_list *get_items_from_folder(char *pathname, bool flag_all)
 	DIR *dir = opendir(pathname);
 	if (!dir)
 	{
-		ft_putstr_fd("ft_ls: cannot access `", 2);
+		ft_putstr_fd("ft_ls: cannot open directory `", 2);
 		ft_putstr_fd(pathname, 2);
 		perror("`");
-		return NULL;
+		return (void*) -1;
 	}
 	t_list* list_folder = NULL;
 	ft_memset(fullpath, '\0', PATH_MAX);
@@ -102,11 +108,7 @@ t_list *get_items_from_folder(char *pathname, bool flag_all)
 		ft_memcpy(fullpath + pathname_len, _r_content->d_name, ft_strlen(_r_content->d_name) + 1);
 		struct stat file_stats;
 		if (lstat(fullpath, &file_stats) == -1)
-		{
-			// printf(fullpath);
-			// printf(" | %s   | %s-\n", pathname , _r_content->d_name);
 			continue;
-		}
 
 		current_item = ft_calloc(1, sizeof(t_item));
 		if (!current_item)

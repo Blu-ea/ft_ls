@@ -18,5 +18,7 @@ int main(int argc, char **argv){
 	t_ls_lst_parms lst_parms = get_parms(flags.paths);
 
 	display_ls(lst_parms, flags);
-	// ft_lstiter(lst_parms.dirs, (void (*)(void *))print_file);
+	ft_free_2d_array(flags.paths);
+	ft_lstclear(&lst_parms.files, free);
+	ft_lstclear(&lst_parms.dirs, free);
 }
