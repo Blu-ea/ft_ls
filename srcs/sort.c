@@ -54,9 +54,9 @@ bool compare_time(t_item* a, t_item* b, bool flag_reverse)
 	long int const a_nsec = a->item_stat.st_mtim.tv_nsec;
 	long int const b_nsec = b->item_stat.st_mtim.tv_nsec;
 	if (a_sec == b_sec && a_nsec == b_nsec)
-		return false;
+		return compare_name(a, b, flag_reverse);
 
-	if (a_sec >= b_sec && (a_sec != b_sec || a_nsec > b_nsec))
+	if (a_sec < b_sec || (a_sec == b_sec && a_nsec < b_nsec))
 		return !flag_reverse;
 	return flag_reverse;
 }

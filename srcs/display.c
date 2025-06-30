@@ -243,7 +243,6 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 	{
 		if (!first)
 			ft_putchar_fd('\n', 1);
-		first = false;
 		ft_printf("%s:\n", dir->pathname);
 	}
 	t_list_padding padding = {0,0,0,0};
@@ -255,8 +254,7 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 		while (item_to_print)
 		{
 			t_item *item = item_to_print->content;
-			if (ft_memcmp(item->pathname, ".", 2) != 0 && ft_memcmp(item->pathname, "..", 3) != 0)
-				total += item->item_stat.st_blocks;  // By man 7 inode : the size of a block is not defined by POSIX.1 so it may be 1024.
+			total += item->item_stat.st_blocks;  // By man 7 inode : the size of a block is not defined by POSIX.1 so it may be 1024.
 			item_to_print = item_to_print->next;
 		}
 		ft_putnbr_fd(total / 2, 1); // i don't know why but ls seems to print for 1k blocks, tho POSIX define them as size of 512.
@@ -319,9 +317,9 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 			display_item(files->content, flags.list, padding, path);
 			if (!flags.list && files->next)
 				write(1, "  ", 2);
-			files = files->next;
-			if (flags.list)
+			if (flags.list && files->next)
 				ft_putchar_fd('\n', 1);
+			files = files->next;
 		}
 		show_name_folder = true;
 		first = false;
@@ -335,7 +333,7 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 		while(dir)
 		{
 			display_folder_content(dir->content, flags, show_name_folder, first);
-
+			first = false;
 			dir = dir->next;
 		}
 	}
