@@ -24,6 +24,7 @@ void ft_set_size(void *item)
 	get_size(ft_strlen(((t_item*)item)->pathname), true);
 }
 
+// unused
 void get_term_width(t_list *files, size_t lst_size)
 {
 	ft_lstiter(files, ft_set_size);
@@ -47,9 +48,9 @@ void get_term_width(t_list *files, size_t lst_size)
 		i++;
 	}
 
-	printf("rows = %d\n", rows);
-	printf("cols = %d\n", cols);
-	printf("cols_W = %d\n", col_width);
+	// printf("rows = %d\n", rows);
+	// printf("cols = %d\n", cols);
+	// printf("cols_W = %d\n", col_width);
 	for (int r = 0; r < rows; r++) {
 		for (int c = 0; c < cols; c++) {
 			size_t idx = c * rows + r;
@@ -63,24 +64,21 @@ void get_term_width(t_list *files, size_t lst_size)
 					write(1, " ", 1);
 			}
 		}
-		printf("\n");
+		// printf("\n");
 	}
 }
 
-int get_column_width(int *all_size, int column_count, int current_column, int line_count)
+int get_column_width(int *all_size, int nb_of_item, int current_column, int line_count)
 {
 	int column_size = 0;
 	int it = current_column * line_count;
 	int end = it + line_count;
-	printf ("start = %d\nend = %d\n", it, end);
-	(void)column_count;
-	while (it < end && it < column_count)
+	while (it < end && it < nb_of_item)
 	{
 		if (column_size < all_size[it])
 			column_size = all_size[it];
 		it ++;
 	}
-	printf("column_size = %d\n", column_size);
 	return column_size;
 }
 
@@ -95,7 +93,6 @@ size_t calc_column_size(t_list *files, size_t max_column, int *column_size)
 	while (files)
 	{
 		all_size[i] = ft_strlen(((t_item*)files->content)->pathname) + 2;
-		printf("%s - %d\n", ((t_item*)files->content)->pathname, all_size[i]);
 		files = files->next;
 		i++;
 	}
@@ -105,15 +102,13 @@ size_t calc_column_size(t_list *files, size_t max_column, int *column_size)
 	size_t line_count = 1;
 	while (i < column_count)
 	{
-		printf("-----------------\n");
-		column_size[i] = get_column_width(all_size, column_count, i , line_count) ;
+		column_size[i] = get_column_width(all_size, max_column, i , line_count) ;
 		line_lenght += column_size[i];
 
-		if (line_lenght >= term_width)
+		if (line_lenght - 2 >= term_width)
 		{
-			printf("Line is too long ! ---- \n\n");
 			line_count ++;
-			column_count = max_column / line_count + max_column % line_count;
+			column_count =(max_column + line_count - 1) / line_count;
 			line_lenght = 0;
 			i = 0;
 		}
@@ -121,10 +116,7 @@ size_t calc_column_size(t_list *files, size_t max_column, int *column_size)
 			i++;
 	}
 	column_size[i] = 0;
-	printf("column_count = %ld\n", column_count);
 	return column_count;
-
-
 }
 
 t_list_padding get_padding(t_list *items, bool flag_list)

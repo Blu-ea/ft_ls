@@ -184,11 +184,4 @@ void display_item_stats(t_item *file, bool flag_list, t_list_padding padding, ch
 			ft_putstr_fd(link_result, 1);
 		}
 	}
-	else
-	{
-		// int column_size[ft_lstsize(files) + 1];
-		// calc_column_size(files,ft_lstsize(files), column_size);
-
-		ft_putstr_fd(file->pathname, 1);
-	}
 }

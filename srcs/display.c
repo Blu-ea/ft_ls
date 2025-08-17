@@ -4,6 +4,61 @@
 
 #include "../incs/ft_ls.h"
 
+void display_items(char pathname[4096], t_flags flags, t_list* items_to_print, t_list_padding padding)
+{
+	if (items_to_print == NULL)
+		return;
+	if (flags.list)
+	{
+		while (items_to_print)
+		{
+			display_item_stats(items_to_print->content, flags.list, padding, pathname);
+			items_to_print = items_to_print->next;
+			ft_putchar_fd('\n', 1);
+		}
+	}
+	else // no list flags, so we print everything in columns
+	{
+		const size_t nb_of_item = ft_lstsize(items_to_print);
+		int column_size[nb_of_item + 1];
+		const size_t nb_column = calc_column_size(items_to_print,nb_of_item, column_size);
+		char *items_names[nb_of_item + 1];
+		int i = 0;
+		while (items_to_print)
+		{
+			items_names[i] = ((t_item*)items_to_print->content)->pathname;
+			items_to_print = items_to_print->next;
+			i++;
+		}
+		size_t current_line = 0;
+		size_t current_column = 0;
+		size_t nb_of_line = (nb_of_item + nb_column - 1) / nb_column;
+
+		while (current_line <nb_of_line)
+		{
+			current_column = 0;
+			while (current_column < nb_column)
+			{
+				size_t index = current_line + (current_column * nb_of_line);
+				if (index < nb_of_item)
+				{
+					ft_putstr_fd(items_names[index], 1);
+
+					long padding_size = column_size[current_column] - ft_strlen(items_names[index]);
+					size_t i = 0;
+					if (current_column == nb_column- 1 )
+						padding_size  = 0;
+					while (++i <= (size_t) padding_size)
+						write(1, " ", 1);
+				}
+				current_column++;
+			}
+			write(1, "\n", 1);
+			current_line++;
+		}
+	}
+}
+
 void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, bool first)
 {
 	t_list *item_to_print = get_items_from_folder(dir->pathname, flags.all);
@@ -35,20 +90,10 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 	}
 	sort_items(&item_to_print, flags.time, flags.reverse);
 	t_list *root_item = item_to_print;
-	while (item_to_print) // first we print the items
-	{
-		display_item_stats(item_to_print->content, flags.list, padding, dir->pathname);
-		if (!flags.list && item_to_print->next)
-			write(1, "  ", 2);
-		item_to_print = item_to_print->next;
-		if (flags.list)
-			ft_putchar_fd('\n', 1);
-	}
-	if (!flags.list)
-		ft_putchar_fd('\n', 1);
+	display_items(dir->pathname, flags, item_to_print, padding);
+
 	if (flags.recursive) // and **ONLY** when all the items are print out, we open the folder recursivly;
 	{
-		item_to_print = root_item;
 		while (item_to_print) // check for the item, too see if there is a folder
 		{
 			t_item *recursive_item = item_to_print->content;
@@ -82,17 +127,9 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 
 		char path[PATH_MAX] = {};
 		path[0] = '.';
-		while(files)
-		{
-			// t_list_padding padding = get_padding(files, flags.list);
-			display_item_stats(files->content, flags.list, get_padding(files, flags.list), path);
-			if ( files->next)
-				ft_putchar_fd('\n', 1);
-			files = files->next;
-		}
+		display_items(path, flags, files, get_padding(files, flags.list));
 		show_name_folder = true;
 		first = false;
-		ft_putchar_fd('\n', 1);
 	}
 	if (chain_items.dirs)
 	{
