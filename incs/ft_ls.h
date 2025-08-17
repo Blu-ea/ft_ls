@@ -7,11 +7,14 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <sys/stat.h>
+# include <sys/ioctl.h>
 # include <sys/types.h>
 # include <dirent.h>
 
 # include "dir_content.h"
 #include "../libft/includes/libft.h"
+#include <grp.h>
+#include <time.h>
 
 # define USAGE \
 	"Usage: ./ft_ls [OPTION] [FOLDER]\n"\
@@ -29,8 +32,11 @@ typedef struct s_flags
 	bool recursive;
 	bool list;
 	bool all;
+	// bool almost_all; // -A : do not take . and ..
 	bool reverse;
 	bool time;
+	// bool unsorted; // -U
+
 	bool _flag_error;
 	char **paths;
 
@@ -40,15 +46,20 @@ t_flags	parsing(int, char**);
 void	print_flags(t_flags pars); // todo: Remove before final push
 
 t_ls_lst_parms get_parms(char **path);
+t_list_padding get_padding(t_list *items, bool flag_list);
+size_t calc_column_size(t_list *files, size_t max_column, int *column_size);
+
 
 t_list*	get_file(char **path, bool recursive);
-
-void display_ls(t_ls_lst_parms lst_parms, t_flags flags);
-
 t_list *get_items_from_folder(char *pathname, bool flag_all);
 
-void sort_items(t_list** lst, bool flag_time, bool flag_reverse);
+void display_ls(t_ls_lst_parms lst_parms, t_flags flags);
+void display_item_stats(t_item *file, bool flag_list, t_list_padding padding, char path[PATH_MAX]);
 
 void recursive_get(t_list** parm_dir ,char *folder_path, bool all_flag);
+
+void get_term_width(t_list *files, size_t lst_size);
+
+void sort_items(t_list** lst, bool flag_time, bool flag_reverse);
 
 #endif //FT_LS_H
