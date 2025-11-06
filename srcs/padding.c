@@ -68,7 +68,7 @@ void get_term_width(t_list *files, size_t lst_size)
 	}
 }
 
-int get_column_width(int *all_size, int nb_of_item, int current_column, int line_count)
+int    get_column_width(int *all_size, int nb_of_item, int current_column, int line_count)
 {
 	int column_size = 0;
 	int it = current_column * line_count;
@@ -102,6 +102,8 @@ size_t calc_column_size(t_list *files, size_t max_column, int *column_size)
 	size_t line_count = 1;
 	while (i < column_count)
 	{
+		if (column_count == 1) break;
+
 		column_size[i] = get_column_width(all_size, max_column, i , line_count) ;
 		line_lenght += column_size[i];
 
