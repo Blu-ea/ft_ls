@@ -20,10 +20,12 @@ void display_items(char pathname[4096], t_flags flags, t_list* items_to_print, t
 	else // no list flags, so we print everything in columns
 	{
 		const size_t nb_of_item = ft_lstsize(items_to_print);
-		int column_size[nb_of_item + 1];
-		const size_t nb_column = calc_column_size(items_to_print,nb_of_item, column_size);
+		size_t column_size[nb_of_item + 1];
+		ft_bzero(column_size, sizeof(size_t) * (nb_of_item + 1));
+		size_t nb_of_line = 1;
+		const size_t nb_column = calc_column_size(items_to_print,nb_of_item, column_size, &nb_of_line);
 		char *items_names[nb_of_item + 1];
-		int i = 0;
+		size_t i = 0;
 		while (items_to_print)
 		{
 			items_names[i] = ((t_item*)items_to_print->content)->pathname;
@@ -32,23 +34,18 @@ void display_items(char pathname[4096], t_flags flags, t_list* items_to_print, t
 		}
 		size_t current_line = 0;
 		size_t current_column = 0;
-		size_t nb_of_line = (nb_of_item + nb_column - 1) / nb_column;
-
-		while (current_line <nb_of_line)
+		while (current_line < nb_of_line)
 		{
 			current_column = 0;
 			while (current_column < nb_column)
 			{
-				size_t index = current_line + (current_column * nb_of_line);
+				const size_t index = current_line + current_column * nb_of_line;
 				if (index < nb_of_item)
 				{
 					ft_putstr_fd(items_names[index], 1);
 
-					long padding_size = column_size[current_column] - ft_strlen(items_names[index]);
-					size_t i = 0;
-					if (current_column == nb_column- 1 )
-						padding_size  = 0;
-					while (++i <= (size_t) padding_size)
+					const size_t padding_size = column_size[current_column] - ft_strlen(items_names[index]);
+					for (size_t _ = 0; _ <= padding_size; _++ )
 						write(1, " ", 1);
 				}
 				current_column++;
@@ -88,7 +85,7 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 
 		padding = get_padding(item_to_print, flags.list);
 	}
-	sort_items(&item_to_print, flags.time, flags.reverse);
+	sort_items_merge(&item_to_print, flags.time, flags.reverse);
 	t_list *root_item = item_to_print;
 	display_items(dir->pathname, flags, item_to_print, padding);
 
@@ -123,9 +120,9 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 	if (chain_items.files)
 	{
 		t_list *files = chain_items.files;
-		sort_items(&files, flags.time, flags.reverse);
+		sort_items_merge(&files, flags.time, flags.reverse);
 
-		char path[PATH_MAX] = {};
+		char path[PATH_MAX] = {0};
 		path[0] = '.';
 		display_items(path, flags, files, get_padding(files, flags.list));
 		show_name_folder = true;
@@ -135,7 +132,7 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 	{
 		t_list* dir = chain_items.dirs;
 		show_name_folder = !!(ft_lstsize(dir) - 1) || show_name_folder;
-		sort_items(&dir, flags.time, flags.reverse);
+		sort_items_merge(&dir, flags.time, flags.reverse);
 		while(dir)
 		{
 			display_folder_content(dir->content, flags, show_name_folder, first);

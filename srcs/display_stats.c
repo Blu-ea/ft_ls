@@ -169,8 +169,8 @@ void display_item_stats(t_item *file, bool flag_list, t_list_padding padding, ch
 		if (S_ISLNK(item_stat.st_mode))
 		{
 			ft_putstr_fd(" -> ", 1);
-			char link_path[PATH_MAX] = {};
-			char link_result[PATH_MAX] = {};
+			char link_path[PATH_MAX] = {0};
+			char link_result[PATH_MAX] = {0};
 			ft_memcpy(link_path , path, ft_strlen(path));
 			if (link_path[ft_strlen(link_path) - 1] != '/')
 				link_path[ft_strlen(link_path)] = '/';

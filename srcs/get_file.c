@@ -84,8 +84,7 @@ void print_file(t_item *temp_item);
 t_list *get_items_from_folder(char *pathname, bool flag_all)
 {
 	size_t pathname_len = ft_strlen(pathname);
-	char fullpath[PATH_MAX];
-	t_item* current_item;
+	char fullpath[PATH_MAX] = {0};
 	DIR *dir = opendir(pathname);
 	if (!dir)
 	{
@@ -95,7 +94,6 @@ t_list *get_items_from_folder(char *pathname, bool flag_all)
 		return (void*) -1;
 	}
 	t_list* list_folder = NULL;
-	ft_memset(fullpath, '\0', PATH_MAX);
 	ft_memcpy(fullpath, pathname, pathname_len);
 	if (fullpath[pathname_len] != '/')
 	{
@@ -112,7 +110,7 @@ t_list *get_items_from_folder(char *pathname, bool flag_all)
 		if (lstat(fullpath, &file_stats) == -1)
 			continue;
 
-		current_item = ft_calloc(1, sizeof(t_item));
+		t_item *current_item = ft_calloc(1, sizeof(t_item));
 		if (!current_item)
 		{
 			perror("ft_ls: out of memory");

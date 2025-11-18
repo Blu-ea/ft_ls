@@ -47,7 +47,7 @@ void	print_flags(t_flags pars); // todo: Remove before final push
 
 t_ls_lst_parms get_parms(char **path);
 t_list_padding get_padding(t_list *items, bool flag_list);
-size_t calc_column_size(t_list *files, size_t max_column, int *column_size);
+size_t calc_column_size(const t_list *files, size_t max_column, size_t *column_size, size_t *line_count);
 
 
 t_list*	get_file(char **path, bool recursive);
@@ -61,5 +61,6 @@ void recursive_get(t_list** parm_dir ,char *folder_path, bool all_flag);
 void get_term_width(t_list *files, size_t lst_size);
 
 void sort_items(t_list** lst, bool flag_time, bool flag_reverse);
+void sort_items_merge(t_list** lst, bool flag_time, bool flag_reverse);
 
 #endif //FT_LS_H

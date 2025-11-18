@@ -7,11 +7,14 @@
 bool compare_time(t_item* a, t_item* b, bool flag_reverse);
 bool compare_name(t_item* a, t_item* b, bool flag_reverse);
 
+typedef bool (*compare_func)(t_item* a, t_item* b, bool flag_reverse);
+
 void sort_items(t_list** lst, bool flag_time, bool flag_reverse)
 {
 	if (!lst || !*lst)
 		return;
-	bool (*compare)(t_item* a, t_item* b, bool flag_reverse);
+	compare_func compare;
+
 	if (flag_time)
 		compare = compare_time;
 	else
@@ -43,6 +46,63 @@ void sort_items(t_list** lst, bool flag_time, bool flag_reverse)
 			previous = it;
 			it = it->next;
 			it2 = it2->next;
+		}
+	}
+}
+
+static t_list* split(t_list* head, int n) {
+	while (--n && head)
+		head = head->next;
+	if (!head)
+		return NULL;
+	t_list* rest = head->next;
+	head->next = NULL;
+	return rest;
+}
+
+static t_list* merge(t_list* a, t_list* b, compare_func compare, bool flag_reverse) {
+	t_list* head = NULL;
+	t_list** tailRef = &head;
+
+	while (a && b) {
+		if (compare (a->content, b->content, flag_reverse)) {
+			*tailRef = b;
+			b = b->next;
+		} else {
+			*tailRef = a;
+			a = a->next;
+		}
+		tailRef = &((*tailRef)->next);
+	}
+
+	*tailRef = a ? a : b;
+	return head;
+}
+
+void sort_items_merge(t_list** lst, bool flag_time, bool flag_reverse) {
+	if (!lst || !*lst)
+		return;
+	bool (*compare)(t_item* a, t_item* b, bool flag_reverse);
+	if (flag_time)
+		compare = compare_time;
+	else
+		compare = compare_name;
+
+	int length = ft_lstsize(*lst);
+
+	for (int size = 1; size < length; size *= 2) {
+		t_list** tailRef = lst;
+		t_list* curr = *lst;
+
+		while (curr) {
+			t_list* left = curr;
+			t_list* right = split(left, size);
+			curr = split(right, size);
+			t_list* merged = merge(left, right, compare, flag_reverse);
+
+			*tailRef = merged;
+			while (*tailRef)
+				tailRef = &((*tailRef)->next);
 		}
 	}
 }

@@ -13,10 +13,11 @@ static void init_flags(t_flags* flag)
 	flag->reverse = false;
 	flag->time = false;
 	flag->_flag_error = false;
-	flag->paths = ft_calloc(2, sizeof(char*));
+	flag->paths = malloc(sizeof(char*) * 2);
 	if (flag->paths == NULL)
 		return;
 	flag->paths[0] = ft_strdup(".");
+	flag->paths[1] = NULL;
 }
 
 void check_flags(t_flags *flags, const char* i_flags)
