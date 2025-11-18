@@ -20,7 +20,7 @@ static void init_flags(t_flags* flag)
 	flag->paths[1] = NULL;
 }
 
-void check_flags(t_flags *flags, const char* i_flags)
+static void check_flags(t_flags *flags, const char* i_flags)
 {
 	if (!ft_memcmp("--help", i_flags, 7))
 	{
@@ -61,7 +61,7 @@ void check_flags(t_flags *flags, const char* i_flags)
 	}
 }
 
-void add_path(t_flags* flags, const char *new_path)
+static void add_path(t_flags* flags, const char *new_path)
 {
 	static bool first = true;
 
@@ -121,18 +121,18 @@ t_flags parsing(int argc, char **argv)
 }
 
 
-void print_flags(t_flags pars) // todo: remove before final push
-{
-	printf("\033[91m == Flags: ==\n");
-	printf("rec : %s\n", pars.recursive ? "true" : "false");
-	printf("list : %s\n", pars.list ? "true" : "false");
-	printf("all : %s\n", pars.all ? "true" : "false");
-	printf("revr : %s\n", pars.reverse ? "true" : "false");
-	printf("time : %s\n", pars.time ? "true" : "false");
-	if (pars.paths)
-		for(int i = 0; pars.paths[i] != NULL; i++ )
-			printf("path [%d]  : %s\n", i, pars.paths[i]);
-	else
-		printf("path : NULL\n");
-	printf(" ===== \033[0m\n");
-}
+// void print_flags(t_flags pars) // todo: remove before final push
+// {
+// 	printf("\033[91m == Flags: ==\n");
+// 	printf("rec : %s\n", pars.recursive ? "true" : "false");
+// 	printf("list : %s\n", pars.list ? "true" : "false");
+// 	printf("all : %s\n", pars.all ? "true" : "false");
+// 	printf("revr : %s\n", pars.reverse ? "true" : "false");
+// 	printf("time : %s\n", pars.time ? "true" : "false");
+// 	if (pars.paths)
+// 		for(int i = 0; pars.paths[i] != NULL; i++ )
+// 			printf("path [%d]  : %s\n", i, pars.paths[i]);
+// 	else
+// 		printf("path : NULL\n");
+// 	printf(" ===== \033[0m\n");
+// }

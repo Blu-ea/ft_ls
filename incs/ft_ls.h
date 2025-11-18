@@ -46,7 +46,7 @@ t_flags	parsing(int, char**);
 void	print_flags(t_flags pars); // todo: Remove before final push
 
 t_ls_lst_parms get_parms(char **path);
-t_list_padding get_padding(t_list *items, bool flag_list);
+t_list_padding get_padding_list_flag(t_list *items, bool flag_list);
 size_t calc_column_size(const t_list *files, size_t max_column, size_t *column_size, size_t *line_count);
 
 

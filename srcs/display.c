@@ -4,7 +4,7 @@
 
 #include "../incs/ft_ls.h"
 
-void display_items(char pathname[4096], t_flags flags, t_list* items_to_print, t_list_padding padding)
+static void display_items(char pathname[4096], const t_flags flags, t_list* items_to_print, t_list_padding padding)
 {
 	if (items_to_print == NULL)
 		return;
@@ -56,7 +56,7 @@ void display_items(char pathname[4096], t_flags flags, t_list* items_to_print, t
 	}
 }
 
-void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, bool first)
+static void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, bool first)
 {
 	t_list *item_to_print = get_items_from_folder(dir->pathname, flags.all);
 	if (item_to_print == (void*) -1)
@@ -83,7 +83,7 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 		ft_putchar_fd('\n', 1);
 		item_to_print = root_item;
 
-		padding = get_padding(item_to_print, flags.list);
+		padding = get_padding_list_flag(item_to_print, flags.list);
 	}
 	sort_items_merge(&item_to_print, flags.time, flags.reverse);
 	t_list *root_item = item_to_print;
@@ -113,7 +113,7 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 	ft_lstclear(&root_item, free);
 }
 
-void display_ls(t_ls_lst_parms chain_items, t_flags flags)
+void display_ls(t_ls_lst_parms chain_items, const t_flags flags)
 {
 	bool first = true;
 	size_t show_name_folder = false;
@@ -124,7 +124,7 @@ void display_ls(t_ls_lst_parms chain_items, t_flags flags)
 
 		char path[PATH_MAX] = {0};
 		path[0] = '.';
-		display_items(path, flags, files, get_padding(files, flags.list));
+		display_items(path, flags, files, get_padding_list_flag(files, flags.list));
 		show_name_folder = true;
 		first = false;
 	}
