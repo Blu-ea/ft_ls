@@ -40,9 +40,10 @@ static int    get_column_width(int *all_size, int nb_of_item, int current_column
 
 size_t calc_column_size(const t_list *files, const size_t max_column, size_t *column_size, size_t *line_count)
 {
-	struct winsize w;
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-	const size_t term_width = w.ws_col;
+	struct winsize w = {0};
+	size_t term_width = 0;
+	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) != -1)
+		term_width = w.ws_col;
 
 	int all_size[max_column]; // The lenght of all the file PLUS 2 for the separator
 	size_t i = 0;
@@ -57,9 +58,9 @@ size_t calc_column_size(const t_list *files, const size_t max_column, size_t *co
 	size_t line_lenght = 0;
 	while (i < column_count)
 	{
-		if (column_count == 1) break;
-
 		column_size[i] = get_column_width(all_size, max_column, i , *line_count) ;
+		if (column_count == 1)
+			break;
 		line_lenght += column_size[i];
 
 		if (line_lenght >= term_width) // Minus 2 to remove the last separator
@@ -72,7 +73,8 @@ size_t calc_column_size(const t_list *files, const size_t max_column, size_t *co
 		else
 			i++;
 	}
-	column_size[i] = 0;
+	if (i != 0)
+		column_size[i] = 0;
 	return column_count;
 }
 

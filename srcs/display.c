@@ -23,7 +23,7 @@ static void display_items(char pathname[4096], const t_flags flags, t_list* item
 		size_t column_size[nb_of_item + 1];
 		ft_bzero(column_size, sizeof(size_t) * (nb_of_item + 1));
 		size_t nb_of_line = 1;
-		const size_t nb_column = calc_column_size(items_to_print,nb_of_item, column_size, &nb_of_line);
+		const size_t nb_column = calc_column_size(items_to_print, nb_of_item, column_size, &nb_of_line);
 		char *items_names[nb_of_item + 1];
 		size_t i = 0;
 		while (items_to_print)
@@ -43,10 +43,12 @@ static void display_items(char pathname[4096], const t_flags flags, t_list* item
 				if (index < nb_of_item)
 				{
 					ft_putstr_fd(items_names[index], 1);
-
-					const size_t padding_size = column_size[current_column] - ft_strlen(items_names[index]);
-					for (size_t _ = 0; _ <= padding_size; _++ )
-						write(1, " ", 1);
+					if (column_size[current_column + 1] != 0)
+						{
+						const size_t padding_size = column_size[current_column] - ft_strlen(items_names[index]);
+						for (size_t _ = 0; _ < padding_size; _++ )
+							write(1, " ", 1);
+					}
 				}
 				current_column++;
 			}
