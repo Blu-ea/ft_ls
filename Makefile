@@ -10,7 +10,9 @@ LST_SRCS	:=	main.c\
 				get_file.c\
 				parsing.c\
 				display.c\
-				sort.c
+				display_stats.c\
+				sort.c\
+				padding.c
 
 LST_OBJS	:=	$(LST_SRCS:.c=.o)
 

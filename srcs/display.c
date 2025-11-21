@@ -3,238 +3,62 @@
 //
 
 #include "../incs/ft_ls.h"
-#include <grp.h>
-#include <time.h>
 
-void stat_display(unsigned int mode_mask, __mode_t mode_value, char print_flag)
+static void display_items(char pathname[4096], const t_flags flags, t_list* items_to_print, t_list_padding padding)
 {
-	if( mode_mask & mode_value)
-		write(1, &print_flag,1);
-	else
-		write(1, "-", 1);
-}
-
-
-void stat_type(__mode_t mode_value)
-{
-	if (S_ISDIR(mode_value))
-		write(1, "d",1); /* Directory */
-	else if (S_ISBLK(mode_value))
-		write(1, "b",1); /* Block special file */
-	else if (S_ISCHR(mode_value))
-		write(1, "c",1); /* Character special file */
-	else if (S_ISLNK(mode_value))
-		write(1, "l",1); /* Symbolic link */
-	else if (S_ISFIFO(mode_value))
-		write(1, "f",1); /* FIFO */
-	else
-		write(1, "-",1);
-}
-
-void stats_display(__mode_t mode_value)
-{
-	stat_type(mode_value);
-	stat_display(S_IRUSR, mode_value, 'r');
-	stat_display(S_IWUSR, mode_value, 'w');
-	if (S_ISUID & mode_value)
+	if (items_to_print == NULL)
+		return;
+	if (flags.list)
 	{
-		if (!(S_IXUSR & mode_value)) write(1, "S",1);
-		else if (S_IXUSR & mode_value) write(1, "s",1);
-	}
-	else
-		stat_display(S_IXUSR, mode_value, 'x');
-
-	stat_display(S_IRGRP, mode_value, 'r');
-	stat_display(S_IWGRP, mode_value, 'w');
-	if (S_ISGID & mode_value)
-	{
-		if (!(S_IXGRP & mode_value)) write(1, "S",1);
-		else if (S_IXGRP & mode_value) write(1, "s",1);
-	}
-	else
-		stat_display(S_IXGRP, mode_value, 'x');
-
-	stat_display(S_IROTH, mode_value, 'r');
-	stat_display(S_IWOTH, mode_value, 'w');
-	if (S_ISVTX & mode_value && S_ISDIR(mode_value))
-	{
-		if (!(S_IXOTH & mode_value)) write(1, "T",1);
-		else if (S_IXOTH & mode_value) write(1, "t",1);
-	}
-	else
-		stat_display(S_IXOTH, mode_value, 'x');
-}
-
-void time_display(struct timespec ts)
-{
-	const time_t *last_update = &ts.tv_sec;
-	const time_t now = time(NULL);
-
-	char *time_str = ctime(last_update);
-	write(1, time_str + 4, 4); /* Month */
-	write(1, time_str + 8, 3); /* Day */
-
-	if (*last_update < now - 15768000 || *last_update > now + 60)
-	{
-		write(1, " " , 1); /* Spacing */
-		write(1, time_str + 20 , 4); /* Year */
-	}
-	else
-		write(1, time_str + 11 , 5); /* Time */
-}
-
-void link_n_display(int padding, __nlink_t link_n)
-{
-	padding -= ft_digitlen(link_n);
-	for(int spaces = 0; spaces < padding; spaces++)
-		ft_putchar_fd(' ', 1);
-	ft_put_unnbr_fd(link_n, 1);
-}
-
-void owner_display(int padding, __uid_t uid)
-{
-	static const struct passwd* user_info = NULL;
-	if (!user_info || user_info->pw_gid != uid)
-		user_info = getpwuid(uid);
-	if (user_info)
-	{
-		ft_putstr_fd(user_info->pw_name, 1);
-		padding -= ft_strlen(user_info->pw_name);
-		for(int spaces = 0; spaces < padding; spaces++)
-			ft_putchar_fd(' ', 1);
-	}
-	else
-	{
-		ft_put_unnbr_fd(uid, 1);
-		padding -= ft_digitlen(uid);
-		for(int spaces = 0; spaces < padding; spaces++)
-			ft_putchar_fd(' ', 1);
-	}
-}
-
-void group_display(int padding, __gid_t gid)
-{
-	static const struct group* group_info = NULL;
-	if (!group_info || group_info->gr_gid != gid)
-		group_info = getgrgid(gid);
-	if (group_info)
-	{
-		ft_putstr_fd(group_info->gr_name, 1);
-		padding -= ft_strlen(group_info->gr_name);
-		for(int spaces = 0; spaces < padding; spaces++)
-			ft_putchar_fd(' ', 1);
-	}
-	else
-	{
-		ft_put_unnbr_fd(gid, 1);
-		padding -= ft_digitlen(gid);
-		for(int spaces = 0; spaces < padding; spaces++)
-			ft_putchar_fd(' ', 1);
-	}
-}
-void size_display(int padding, __off_t size)
-{
-	padding -= ft_digitlen(size);
-	for(int spaces = 0; spaces < padding; spaces++)
-		ft_putchar_fd(' ', 1);
-	ft_put_unnbr_fd(size, 1);
-}
-
-
-void display_item(t_item *file, bool flag_list, t_list_padding padding, char path[PATH_MAX])
-{
-	if(flag_list)
-	{
-		const struct stat item_stat = file->item_stat;
-
-		stats_display(item_stat.st_mode);  /* Mode */
-
-		ft_putchar_fd(' ', 1); /* Links number */
-		link_n_display(padding.link, item_stat.st_nlink);
-
-		ft_putchar_fd(' ', 1); /* Owner User */
-		owner_display(padding.user, item_stat.st_uid);
-
-		ft_putchar_fd(' ', 1); /* Group Owner */
-		group_display(padding.group, item_stat.st_gid);
-
-		ft_putchar_fd(' ', 1); /* Size of the file */
-		size_display(padding.size, item_stat.st_size);
-
-		ft_putchar_fd(' ', 1); /* Date */
-		time_display(item_stat.st_mtim);
-
-		ft_putstr_fd(" ", 1); /* File name */
-		ft_putstr_fd(file->pathname, 1);
-		if (S_ISLNK(item_stat.st_mode))
+		while (items_to_print)
 		{
-			ft_putstr_fd(" -> ", 1);
-			char link_path[PATH_MAX] = {};
-			char link_result[PATH_MAX] = {};
-			ft_memcpy(link_path , path, ft_strlen(path));
-			if (link_path[ft_strlen(link_path) - 1] != '/')
-				link_path[ft_strlen(link_path)] = '/';
-			ft_memcpy(link_path + ft_strlen(link_path), file->pathname, ft_strlen(file->pathname));
-			if (readlink(link_path, link_result, PATH_MAX) == -1)
-			{
-				ft_putstr_fd("ft_ls: ", 2);
-				perror(link_path);
-				return; // todo : error ?
-			}
-			ft_putstr_fd(link_result, 1);
+			display_item_stats(items_to_print->content, flags.list, padding, pathname);
+			items_to_print = items_to_print->next;
+			ft_putchar_fd('\n', 1);
 		}
 	}
-	else
+	else // no list flags, so we print everything in columns
 	{
-		ft_putstr_fd(file->pathname, 1);
+		const size_t nb_of_item = ft_lstsize(items_to_print);
+		size_t column_size[nb_of_item + 1];
+		ft_bzero(column_size, sizeof(size_t) * (nb_of_item + 1));
+		size_t nb_of_line = 1;
+		const size_t nb_column = calc_column_size(items_to_print, nb_of_item, column_size, &nb_of_line);
+		char *items_names[nb_of_item + 1];
+		size_t i = 0;
+		while (items_to_print)
+		{
+			items_names[i] = ((t_item*)items_to_print->content)->pathname;
+			items_to_print = items_to_print->next;
+			i++;
+		}
+		size_t current_line = 0;
+		size_t current_column = 0;
+		while (current_line < nb_of_line)
+		{
+			current_column = 0;
+			while (current_column < nb_column)
+			{
+				const size_t index = current_line + current_column * nb_of_line;
+				if (index < nb_of_item)
+				{
+					ft_putstr_fd(items_names[index], 1);
+					if (column_size[current_column + 1] != 0)
+						{
+						const size_t padding_size = column_size[current_column] - ft_strlen(items_names[index]);
+						for (size_t _ = 0; _ < padding_size; _++ )
+							write(1, " ", 1);
+					}
+				}
+				current_column++;
+			}
+			write(1, "\n", 1);
+			current_line++;
+		}
 	}
 }
 
-t_list_padding get_padding(t_list *items, bool flag_list)
-{
-	t_list_padding padding = {0,0,0,0};
-	if (!flag_list)
-		return padding;
-	while (items)
-	{
-		t_item *item = items->content;
-
-		int link = ft_digitlen(item->item_stat.st_nlink);
-		if (link > padding.link)
-			padding.link = link;
-
-		int size = ft_digitlen(item->item_stat.st_size);
-		if (size > padding.size)
-			padding.size = size;
-
-		static struct passwd* user_info = NULL;
-		if (!user_info || user_info->pw_gid != item->item_stat.st_uid)
-			user_info = getpwuid(item->item_stat.st_uid);
-		int user = 0;
-		if (user_info)
-			user = ft_strlen(user_info->pw_name);
-		else
-			user = ft_digitlen(item->item_stat.st_uid);
-		if (user > padding.user)
-			padding.user = user;
-
-		static const struct group* group_info = NULL;
-		if (!group_info || group_info->gr_gid != item->item_stat.st_gid)
-			group_info = getgrgid(item->item_stat.st_gid);
-		int group = 0;
-		if (group_info)
-			group = ft_strlen(group_info->gr_name);
-		else
-			group = ft_digitlen(item->item_stat.st_gid);
-		if (group > padding.group)
-			padding.group = group;
-
-		items = items->next;
-	}
-	return padding;
-}
-
-void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, bool first)
+static void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, bool first)
 {
 	t_list *item_to_print = get_items_from_folder(dir->pathname, flags.all);
 	if (item_to_print == (void*) -1)
@@ -261,24 +85,14 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 		ft_putchar_fd('\n', 1);
 		item_to_print = root_item;
 
-		padding = get_padding(item_to_print, flags.list);
+		padding = get_padding_list_flag(item_to_print, flags.list);
 	}
-	sort_items(&item_to_print, flags.time, flags.reverse);
+	sort_items_merge(&item_to_print, flags.time, flags.reverse);
 	t_list *root_item = item_to_print;
-	while (item_to_print) // first we print the items
-	{
-		display_item(item_to_print->content, flags.list, padding, dir->pathname);
-		if (!flags.list && item_to_print->next)
-			write(1, "  ", 2);
-		item_to_print = item_to_print->next;
-		if (flags.list)
-			ft_putchar_fd('\n', 1);
-	}
-	if (!flags.list)
-		ft_putchar_fd('\n', 1);
+	display_items(dir->pathname, flags, item_to_print, padding);
+
 	if (flags.recursive) // and **ONLY** when all the items are print out, we open the folder recursivly;
 	{
-		item_to_print = root_item;
 		while (item_to_print) // check for the item, too see if there is a folder
 		{
 			t_item *recursive_item = item_to_print->content;
@@ -301,35 +115,26 @@ void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, b
 	ft_lstclear(&root_item, free);
 }
 
-void display_ls(t_ls_lst_parms chain_items, t_flags flags)
+void display_ls(t_ls_lst_parms chain_items, const t_flags flags)
 {
 	bool first = true;
 	size_t show_name_folder = false;
 	if (chain_items.files)
 	{
 		t_list *files = chain_items.files;
-		sort_items(&files, flags.time, flags.reverse);
-		t_list_padding padding = get_padding(files, flags.list);
-		char path[PATH_MAX] = {};
+		sort_items_merge(&files, flags.time, flags.reverse);
+
+		char path[PATH_MAX] = {0};
 		path[0] = '.';
-		while(files)
-		{
-			display_item(files->content, flags.list, padding, path);
-			if (!flags.list && files->next)
-				write(1, "  ", 2);
-			if (flags.list && files->next)
-				ft_putchar_fd('\n', 1);
-			files = files->next;
-		}
+		display_items(path, flags, files, get_padding_list_flag(files, flags.list));
 		show_name_folder = true;
 		first = false;
-		ft_putchar_fd('\n', 1);
 	}
 	if (chain_items.dirs)
 	{
 		t_list* dir = chain_items.dirs;
 		show_name_folder = !!(ft_lstsize(dir) - 1) || show_name_folder;
-		sort_items(&dir, flags.time, flags.reverse);
+		sort_items_merge(&dir, flags.time, flags.reverse);
 		while(dir)
 		{
 			display_folder_content(dir->content, flags, show_name_folder, first);
