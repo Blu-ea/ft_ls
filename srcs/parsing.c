@@ -11,7 +11,7 @@ static void init_flags(t_flags* flag)
 	flag->list = false;
 	flag->all = false;
 	flag->reverse = false;
-	flag->time = false;
+	flag->compare = compare_name;
 	flag->_flag_error = false;
 	flag->paths = malloc(sizeof(char*) * 2);
 	if (flag->paths == NULL)
@@ -48,7 +48,10 @@ static void check_flags(t_flags *flags, const char* i_flags)
 				flags->reverse = true;
 				break;
 			case 't':
-				flags->time = true;
+				flags->compare = compare_time;
+				break;
+			case 'U':
+				flags->compare = no_sort;
 				break;
 			default:
 				ft_putstr_fd("\033[31mft_ls: invalid option -- '", 2);

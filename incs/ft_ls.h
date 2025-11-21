@@ -27,15 +27,16 @@
 	"		For a symbolic link, the time used as the sort key is that of the symbolic link itself.\n"\
 	"	--help	Display this help and exit.\n"
 
+typedef bool (*compare_func)(t_item* a, t_item* b, bool flag_reverse);
+
 typedef struct s_flags
 {
 	bool recursive;
 	bool list;
 	bool all;
 	// bool almost_all; // -A : do not take . and ..
-	bool reverse;
-	bool time;
-	// bool unsorted; // -U
+	bool reverse; // reverse does not affect the -U flag
+	compare_func compare; // handle the Time and Unsorted flags
 
 	bool _flag_error;
 	char **paths;
@@ -61,6 +62,12 @@ void recursive_get(t_list** parm_dir ,char *folder_path, bool all_flag);
 void get_term_width(t_list *files, size_t lst_size);
 
 void sort_items(t_list** lst, bool flag_time, bool flag_reverse);
-void sort_items_merge(t_list** lst, bool flag_time, bool flag_reverse);
+void sort_items_merge(t_list** lst, compare_func compare, bool flag_reverse);
+
+// -- All the compare Functions used for sorting -- //
+bool compare_time(t_item* a, t_item* b, bool flag_reverse);
+bool compare_name(t_item* a, t_item* b, bool flag_reverse);
+bool no_sort(t_item* a, t_item* b, bool flag_reverse);
+// --  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -- //
 
 #endif //FT_LS_H

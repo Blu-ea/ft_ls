@@ -87,7 +87,7 @@ static void display_folder_content(t_item* dir, t_flags flags, bool show_name_fo
 
 		padding = get_padding_list_flag(item_to_print, flags.list);
 	}
-	sort_items_merge(&item_to_print, flags.time, flags.reverse);
+	sort_items_merge(&item_to_print, flags.compare, flags.reverse);
 	t_list *root_item = item_to_print;
 	display_items(dir->pathname, flags, item_to_print, padding);
 
@@ -122,7 +122,7 @@ void display_ls(t_ls_lst_parms chain_items, const t_flags flags)
 	if (chain_items.files)
 	{
 		t_list *files = chain_items.files;
-		sort_items_merge(&files, flags.time, flags.reverse);
+		sort_items_merge(&files, flags.compare, flags.reverse);
 
 		char path[PATH_MAX] = {0};
 		path[0] = '.';
@@ -134,7 +134,7 @@ void display_ls(t_ls_lst_parms chain_items, const t_flags flags)
 	{
 		t_list* dir = chain_items.dirs;
 		show_name_folder = !!(ft_lstsize(dir) - 1) || show_name_folder;
-		sort_items_merge(&dir, flags.time, flags.reverse);
+		sort_items_merge(&dir, flags.compare, flags.reverse);
 		while(dir)
 		{
 			display_folder_content(dir->content, flags, show_name_folder, first);

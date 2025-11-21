@@ -4,52 +4,6 @@
 
 #include "../incs/ft_ls.h"
 
-static bool compare_time(t_item* a, t_item* b, bool flag_reverse);
-static bool compare_name(t_item* a, t_item* b, bool flag_reverse);
-
-typedef bool (*compare_func)(t_item* a, t_item* b, bool flag_reverse);
-
-// void sort_items(t_list** lst, bool flag_time, bool flag_reverse)
-// {
-// 	if (!lst || !*lst)
-// 		return;
-// 	compare_func compare;
-//
-// 	if (flag_time)
-// 		compare = compare_time;
-// 	else
-// 		compare = compare_name;
-// 	t_list* previous;
-// 	t_list* it;
-// 	t_list* it2;
-// 	previous = NULL;
-// 	it = *lst;
-// 	it2 = (*lst)->next;
-// 	while (it2 != NULL)
-// 	{
-// 		if (compare(it->content, it2->content, flag_reverse))
-// 		{
-// 			if (previous == NULL)
-// 				*lst = it2;
-// 			else
-// 				previous->next = it2;
-//
-// 			it->next = it2->next;
-// 			it2->next = it;
-//
-// 			previous = NULL;
-// 			it = *lst;
-// 			it2 = it->next;
-// 		}
-// 		else
-// 		{
-// 			previous = it;
-// 			it = it->next;
-// 			it2 = it2->next;
-// 		}
-// 	}
-// }
-
 static t_list* split(t_list* head, int n) {
 	while (--n && head)
 		head = head->next;
@@ -79,14 +33,9 @@ static t_list* merge(t_list* a, t_list* b, compare_func compare, bool flag_rever
 	return head;
 }
 
-void sort_items_merge(t_list** lst, bool flag_time, bool flag_reverse) {
+void sort_items_merge(t_list** lst, compare_func compare, bool flag_reverse) {
 	if (!lst || !*lst)
 		return;
-	bool (*compare)(t_item* a, t_item* b, bool flag_reverse);
-	if (flag_time)
-		compare = compare_time;
-	else
-		compare = compare_name;
 
 	int length = ft_lstsize(*lst);
 
@@ -107,7 +56,7 @@ void sort_items_merge(t_list** lst, bool flag_time, bool flag_reverse) {
 	}
 }
 
-static bool compare_time(t_item* a, t_item* b, bool flag_reverse)
+bool compare_time(t_item* a, t_item* b, bool flag_reverse)
 {
 	long int const a_sec = a->item_stat.st_mtim.tv_sec;
 	long int const b_sec = b->item_stat.st_mtim.tv_sec;
@@ -121,7 +70,7 @@ static bool compare_time(t_item* a, t_item* b, bool flag_reverse)
 	return flag_reverse;
 }
 
-static bool compare_name(t_item* a, t_item* b, bool flag_reverse)
+bool compare_name(t_item* a, t_item* b, bool flag_reverse)
 {
 	int const cmp = ft_strcmp(a->pathname, b->pathname);
 	if (cmp == 0)
@@ -129,4 +78,11 @@ static bool compare_name(t_item* a, t_item* b, bool flag_reverse)
 	if (cmp > 0)
 		return !flag_reverse;
 	return flag_reverse;
+}
+
+bool no_sort(t_item* a, t_item* b, bool flag_reverse) {
+	(void) a;
+	(void) b;
+	(void)flag_reverse;
+	return true;
 }
