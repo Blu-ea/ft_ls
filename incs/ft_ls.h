@@ -29,12 +29,22 @@
 
 typedef bool (*compare_func)(t_item* a, t_item* b, bool flag_reverse);
 
+typedef enum e_content {
+	ALL,
+	ALMOST,
+	NO_HIDDEN,
+} t_filter;
+
+#define IS_ALL(filter) (filter == ALL)
+#define IS_ALMOST(filter) (filter == ALMOST)
+#define IS_NO_HIDDEN(filter) (filter == NO_HIDDEN)
+
 typedef struct s_flags
 {
 	bool recursive;
 	bool list;
-	bool all;
-	// bool almost_all; // -A : do not take . and ..
+	t_filter filter;
+
 	bool reverse; // reverse does not affect the -U flag
 	compare_func compare; // handle the Time and Unsorted flags
 
@@ -44,7 +54,6 @@ typedef struct s_flags
 }	t_flags;
 
 t_flags	parsing(int, char**);
-void	print_flags(t_flags pars); // todo: Remove before final push
 
 t_ls_lst_parms get_parms(char **path);
 t_list_padding get_padding_list_flag(t_list *items, bool flag_list);
@@ -52,7 +61,7 @@ size_t calc_column_size(const t_list *files, size_t max_column, size_t *column_s
 
 
 t_list*	get_file(char **path, bool recursive);
-t_list *get_items_from_folder(char *pathname, bool flag_all);
+t_list *get_items_from_folder(char *pathname, t_filter filter);
 
 void display_ls(t_ls_lst_parms lst_parms, t_flags flags);
 void display_item_stats(t_item *file, bool flag_list, t_list_padding padding, char path[PATH_MAX]);

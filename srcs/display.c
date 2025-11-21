@@ -60,7 +60,7 @@ static void display_items(char pathname[4096], const t_flags flags, t_list* item
 
 static void display_folder_content(t_item* dir, t_flags flags, bool show_name_folder, bool first)
 {
-	t_list *item_to_print = get_items_from_folder(dir->pathname, flags.all);
+	t_list *item_to_print = get_items_from_folder(dir->pathname, flags.filter);
 	if (item_to_print == (void*) -1)
 		return;
 	if (show_name_folder || flags.recursive)

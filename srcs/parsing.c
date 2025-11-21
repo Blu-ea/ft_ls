@@ -9,7 +9,7 @@ static void init_flags(t_flags* flag)
 {
 	flag->recursive = false;
 	flag->list = false;
-	flag->all = false;
+	flag->filter = NO_HIDDEN;
 	flag->reverse = false;
 	flag->compare = compare_name;
 	flag->_flag_error = false;
@@ -42,7 +42,10 @@ static void check_flags(t_flags *flags, const char* i_flags)
 				flags->list = true;
 				break;
 			case 'a':
-				flags->all = true;
+				flags->filter = ALL;
+				break;
+			case 'A':
+				flags->filter = ALMOST;
 				break;
 			case 'r':
 				flags->reverse = true;
@@ -122,20 +125,3 @@ t_flags parsing(int argc, char **argv)
 
 	return flags;
 }
-
-
-// void print_flags(t_flags pars) // todo: remove before final push
-// {
-// 	printf("\033[91m == Flags: ==\n");
-// 	printf("rec : %s\n", pars.recursive ? "true" : "false");
-// 	printf("list : %s\n", pars.list ? "true" : "false");
-// 	printf("all : %s\n", pars.all ? "true" : "false");
-// 	printf("revr : %s\n", pars.reverse ? "true" : "false");
-// 	printf("time : %s\n", pars.time ? "true" : "false");
-// 	if (pars.paths)
-// 		for(int i = 0; pars.paths[i] != NULL; i++ )
-// 			printf("path [%d]  : %s\n", i, pars.paths[i]);
-// 	else
-// 		printf("path : NULL\n");
-// 	printf(" ===== \033[0m\n");
-// }
