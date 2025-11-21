@@ -63,7 +63,7 @@ size_t calc_column_size(const t_list *files, const size_t max_column, size_t *co
 			break;
 		line_lenght += column_size[i];
 
-		if (line_lenght >= term_width) // Minus 2 to remove the last separator
+		if (line_lenght - 1 >= term_width) // Minus 2 to remove the last separator
 		{
 			(*line_count) ++;  // We did not find so we increment the number of possible line
 			column_count = (max_column + *line_count - 1) / *line_count; // We recalculate the number of column needed
