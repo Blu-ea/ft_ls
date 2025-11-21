@@ -2,47 +2,6 @@
 
 #include "../incs/ft_ls.h"
 
-//
-// void recursive_get(t_list** parm_dir ,char *folder_path, bool all_flag)
-// {
-// 	DIR* dir = opendir(folder_path);
-// 	if (!dir)
-// 	{
-// 		ft_putstr_fd("ft_ls: cannot open directory `", 2);
-// 		ft_putstr_fd(folder_path, 2);
-// 		perror("`");
-// 		return;
-// 	}
-// 	for (struct dirent* _r_content = readdir(dir); _r_content; _r_content = readdir(dir))
-// 	{
-// 		if (_r_content->d_type == DT_DIR
-// 			&& (_r_content->d_name[0] != '.'  || all_flag)
-// 			&& ft_memcmp(_r_content->d_name, ".", 2) != 0
-// 			&& ft_memcmp(_r_content->d_name, "..", 3) != 0)
-// 		{
-// 			t_item* current_item;
-// 			current_item = ft_calloc(1, sizeof(t_item));
-// 			char fullpath[PATH_MAX];
-// 			ft_memset(fullpath, 0, PATH_MAX);
-// 			ft_memcpy(fullpath, folder_path, ft_strlen(folder_path));
-// 			if (fullpath[ft_strlen(folder_path) - 1] != '/')
-// 				fullpath[ft_strlen(folder_path)] = '/';
-// 			ft_memcpy(fullpath + ft_strlen(fullpath), _r_content->d_name, ft_strlen( _r_content->d_name) );
-// 			ft_memcpy(current_item->pathname, fullpath, ft_strlen(fullpath));
-// 			lstat(fullpath, &current_item->item_stat);
-// 			t_list *new_item = ft_lstnew(current_item);
-// 			if (!new_item)
-// 			{
-// 				ft_putstr_fd("ft_ls: out of memory", 2);
-// 				return;
-// 			}
-// 			ft_lstadd_back(parm_dir, new_item);
-// 			recursive_get(parm_dir, fullpath, all_flag);
-// 		}
-// 	}
-// 	closedir(dir);
-// }
-
 t_ls_lst_parms get_parms(char **path)
 {
 	t_ls_lst_parms parm = {NULL, NULL};
@@ -79,7 +38,7 @@ t_ls_lst_parms get_parms(char **path)
 	return parm;
 }
 
-t_list *get_items_from_folder(char *pathname, bool flag_all)
+t_list *get_items_from_folder(char *pathname, t_filter filter)
 {
 	size_t pathname_len = ft_strlen(pathname);
 	char fullpath[PATH_MAX] = {0};
@@ -101,8 +60,14 @@ t_list *get_items_from_folder(char *pathname, bool flag_all)
 
 	for (struct dirent* _r_content = readdir(dir); _r_content; _r_content = readdir(dir))
 	{
-		if (_r_content->d_name[0] == '.'  && !flag_all)
-			continue;
+		if (IS_NO_HIDDEN(filter) && _r_content->d_name[0] == '.')
+			continue; // We skip items starting by `.`
+		if (IS_ALMOST(filter)
+			&& (
+				ft_memcmp(_r_content->d_name, "..", ft_strlen(_r_content->d_name)) == 0 ||
+				ft_memcmp(_r_content->d_name, ".", ft_strlen(_r_content->d_name)) == 0
+				))
+			continue; // We skip `.` and `..`
 		ft_memcpy(fullpath + pathname_len, _r_content->d_name, ft_strlen(_r_content->d_name) + 1);
 		struct stat file_stats;
 		if (lstat(fullpath, &file_stats) == -1)
