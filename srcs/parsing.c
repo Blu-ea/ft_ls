@@ -57,9 +57,10 @@ static void check_flags(t_flags *flags, const char* i_flags)
 				flags->compare = no_sort;
 				break;
 			default:
-				ft_putstr_fd("\033[31mft_ls: invalid option -- '", 2);
+				ft_putstr_fd("\033[31;1mft_ls: invalid option -- '", 2);
 				ft_putchar_fd(i_flags[i], 2);
 				ft_putstr_fd("'\033[0m\n", 2);
+				ft_putstr_fd("Try 'ft_ls --help' for mor information.\n", 2);
 				flags->_flag_error = true;
 				return;
 		}

@@ -83,6 +83,5 @@ bool compare_name(t_item* a, t_item* b, bool flag_reverse)
 bool no_sort(t_item* a, t_item* b, bool flag_reverse) {
 	(void) a;
 	(void) b;
-	(void)flag_reverse;
-	return true;
+	return flag_reverse;
 }

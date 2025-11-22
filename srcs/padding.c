@@ -4,26 +4,6 @@
 
 #include "../incs/ft_ls.h"
 
-// size_t get_size(size_t size, bool update)
-// {
-// 	static size_t size_max = 0;
-// 	if (!update)
-// 	{
-// 		size = size_max;
-// 		size_max = 0;
-// 		return size;
-// 	}
-// 	if (size_max < size)
-// 		size_max = size;
-// 	printf("size_max: %zu\n", size_max);
-// 	return 0;
-// }
-//
-// void ft_set_size(void *item)
-// {
-// 	get_size(ft_strlen(((t_item*)item)->pathname), true);
-// }
-
 static int    get_column_width(int *all_size, int nb_of_item, int current_column, size_t line_count)
 {
 	int column_size = 0;

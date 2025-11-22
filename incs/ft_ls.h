@@ -1,31 +1,32 @@
 #ifndef FT_LS_H
 # define FT_LS_H
 
-#include <stdio.h> // printf
-
 # include <pwd.h>
-# include <stdlib.h>
-# include <unistd.h>
 # include <sys/stat.h>
 # include <sys/ioctl.h>
 # include <sys/types.h>
 # include <dirent.h>
+# include <grp.h>
+# include <time.h>
+# include <stdbool.h>
 
 # include "dir_content.h"
-#include "../libft/includes/libft.h"
-#include <grp.h>
-#include <time.h>
+# include "../libft/includes/libft.h"
 
 # define USAGE \
 	"Usage: ./ft_ls [OPTION] [FOLDER]\n"\
 	"Options:\n"\
-	"	-R	Recursively list subdirectories encountered. When a symbolic link to a directory is encountered, the directory shall not be recursively listed.\n"\
 	"	-a	Write out all directory entries, including those whose names begin with a <period> ('.').\n"\
-	"	-A	Write out all directory entries, including those whose names begin with a <period> ('.')  but excluding the entries dot and dot-dot (if they exist).\n"\
+	"	-A	Write out all directory entries, including those whose names begin with a <period> ('.')\n"\
+	"			but excluding the entries dot and dot-dot (if they exist).\n"\
 	"	-l	Write out in long format.\n"\
-	"	-r	Reverse the order of the sort to get reverse collating sequence oldest first, or smallest file size first depending on the other options given.\n"\
-	"	-t	Sort with the primary key being time modified (most recently modified first) and the secondary key being filename in the collating sequence.\n"\
-	"		For a symbolic link, the time used as the sort key is that of the symbolic link itself.\n"\
+	"	-r	Reverse the order of the sort to get reverse collating sequence oldest first,\n"\
+	"			or smallest file size first depending on the other options given.\n"\
+	"	-R	Recursively list subdirectories encountered.\n"\
+	"			When a symbolic link to a directory is encountered, the directory shall not be recursively listed.\n"\
+	"	-t	Sort with the primary key being time modified (most recently modified first)\n"\
+	"			and the secondary key being filename in the collating sequence.\n"\
+	"			For a symbolic link, the time used as the sort key is that of the symbolic link itself.\n"\
 	"	-U	Do not sort directory entries.\n"\
 	"	--help	Display this help and exit.\n"
 
@@ -45,10 +46,10 @@ typedef struct s_flags
 {
 	bool recursive;
 	bool list;
-	t_filter filter;
+	t_filter filter; // handle the `-a` and `-A`
 
-	bool reverse; // reverse does not affect the -U flag
-	compare_func compare; // handle the Time and Unsorted flags
+	bool reverse;
+	compare_func compare; // handle the Time and Unsorted flags and default (being ascii)
 
 	bool _flag_error;
 	char **paths;

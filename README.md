@@ -6,7 +6,10 @@ This is a reproduction of the unix ls command in C
 `ls` list "all" the files present in a certain directory.
 
 By default, the hidden files will not be showed (see [-a](#flag--a)).
-The files will be sorted by byte-by-byte (by the ASCII table) by default (see [-t](#flag--t) and [-r](#flag--r-1)).
+The files will be sorted by byte-by-byte (by the ASCII table) by default (see [-t](#flag--t) and [-r](#flag--r-1)).  
+
+There is also color for directories, links, and executables. If the link's target is not valid, then the color will be in red
+
 
 > [!NOTE]  
 > See `--help` to see the usage.
@@ -15,11 +18,13 @@ The files will be sorted by byte-by-byte (by the ASCII table) by default (see [-
 > 
 > Options:
 > <dl>
-> <code>-R</code> <dd>Recursively list subdirectories encountered. When a symbolic link to a directory is encountered, the directory shall not be recursively listed.</dd>
-> <code>-a</code>	<dd>Write out all directory entries, including those whose names begin with a &lt;period&gt; ('.').</dd>
-> <code>-l</code>	<dd>Write out in long format.</dd>
-> <code>-r</code>	<dd>Reverse the order of the sort to get reverse collating sequence oldest first, or smallest file size first depending on the other options given.</dd>
-> <code>-t</code>	<dd>Sort with the primary key being time modified (most recently modified first) and the secondary key being filename in the collating sequence.  For a symbolic link, the time used as the sort key is that of the symbolic link itself.</dd>
+> <code>-a</code>	 <dd>Write out all directory entries, including those whose names begin with a &lt;period&gt; ('.').</dd>
+> <code>-A</code>	 <dd>Write out all directory entries, including those whose names begin with a &lt;period&gt; ('.') but excluding the entries dot and dot-dot (if they exist).</dd>
+> <code>-l</code>	 <dd>Write out in long format.</dd>
+> <code>-r</code>	 <dd>Reverse the order of the sort to get reverse collating sequence oldest first, or smallest file size first depending on the other options given.</dd>
+> <code>-R</code>    <dd>Recursively list subdirectories encountered. When a symbolic link to a directory is encountered, the directory shall not be recursively listed.</dd>
+> <code>-t</code>	 <dd>Sort with the primary key being time modified (most recently modified first) and the secondary key being filename in the collating sequence.  For a symbolic link, the time used as the sort key is that of the symbolic link itself.</dd>
+> <code>-U</code>	 <dd>Do not sort directory entries.</dd>
 > <code>--help</code>	<dd> display this help and exit.</dd>
 > </dl>
 
@@ -27,21 +32,23 @@ The files will be sorted by byte-by-byte (by the ASCII table) by default (see [-
 ---
 
 # Flags Required
- - [`-R`](#--flag--r)
  - [`-a`](#--flag--a)
+ - [`-A`](#--flag--a-1)
  - [`-l`](#--flag--l)
- - [`-r`](#--flag--r-1)
+ - [`-r`](#--flag--r)
+ - [`-R`](#--flag--r-1)
  - [`-t`](#--flag--t)
+ - [`-U`](#--flag--u)
 
 ## Flags 
-
-### - Flag `-R`
-
-Recursive, will enter all sub directory and list all files and directory in those sub directories
 
 ### - Flag `-a`
 
 All, the list of file listed will contain all file, including the hiden one ( exemple: `.env` )
+
+### - Flag `-A`
+
+Almost, the list of file listed will contain almost all the file, being the hidden one, but not the `.` and `..`, that are contain in [`-a`](#--flag--a)
 
 ### - Flag `-l`
 
@@ -57,39 +64,14 @@ If the file is a symbolic links, the Pathname will be like `<link_name> -> <path
 
 Reverse, the list order will be reverse. (show the bottom of the list first)
 
+### - Flag `-R`
+
+Recursive, will enter all sub directory and list all files and directory in those sub directories
+
 ### - Flag `-t`
 
 Time, will sort the list by time, aka.`newest first` 
 
----
+### - Flag `-U`
 
-# Authorised function
- - write
- - opendir
- - readdir
- - closedir
- - stat
- - lstatid
- - getgrgid
- - getpwu
- - listxattr
- - getxattr
- - time
- - ctime
- - readlink
- - malloc
- - free
- - perror
- - strerror
- - exit
-
-# How does it works
-
-1. Parse the input parms (flags/paths)
-2. Stat of the input path
-   1. If its a file, add it to file list
-   2. If its a folder, add it to file list
-      1. if -R is activated, 
-      2. read the dir and check all files 
-      3. if its a folder, add it to the list, go to `2.2.2` with it 
-3. display all the files and folder with the according flags
+Unsort, the files will not be preemptively sorted, and will be ordered as the in directory order

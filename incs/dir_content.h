@@ -1,9 +1,7 @@
 #ifndef DIR_CONTENT_H
 # define DIR_CONTENT_H
 
-# include <stdbool.h>
-
-#include "../libft/includes/libft.h"
+# include "../libft/includes/libft.h"
 
 typedef struct s_ls_lst_parms
 {
