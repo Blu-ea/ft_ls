@@ -51,7 +51,7 @@ static void check_flags(t_flags *flags, const char* i_flags)
 				flags->reverse = true;
 				break;
 			case 't':
-				flags->compare = compare_time;
+				flags->compare = compare_edit_time;
 				break;
 			case 'U':
 				flags->compare = no_sort;

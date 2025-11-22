@@ -21,10 +21,12 @@
 	"Options:\n"\
 	"	-R	Recursively list subdirectories encountered. When a symbolic link to a directory is encountered, the directory shall not be recursively listed.\n"\
 	"	-a	Write out all directory entries, including those whose names begin with a <period> ('.').\n"\
+	"	-A	Write out all directory entries, including those whose names begin with a <period> ('.')  but excluding the entries dot and dot-dot (if they exist).\n"\
 	"	-l	Write out in long format.\n"\
 	"	-r	Reverse the order of the sort to get reverse collating sequence oldest first, or smallest file size first depending on the other options given.\n"\
 	"	-t	Sort with the primary key being time modified (most recently modified first) and the secondary key being filename in the collating sequence.\n"\
 	"		For a symbolic link, the time used as the sort key is that of the symbolic link itself.\n"\
+	"	-U	Do not sort directory entries.\n"\
 	"	--help	Display this help and exit.\n"
 
 typedef bool (*compare_func)(t_item* a, t_item* b, bool flag_reverse);
@@ -65,6 +67,7 @@ t_list *get_items_from_folder(char *pathname, t_filter filter);
 
 void display_ls(t_ls_lst_parms lst_parms, t_flags flags);
 void display_item_stats(t_item *file, bool flag_list, t_list_padding padding, char path[PATH_MAX]);
+void put_colored_name(t_item *item);
 
 void recursive_get(t_list** parm_dir ,char *folder_path, bool all_flag);
 
@@ -74,7 +77,7 @@ void sort_items(t_list** lst, bool flag_time, bool flag_reverse);
 void sort_items_merge(t_list** lst, compare_func compare, bool flag_reverse);
 
 // -- All the compare Functions used for sorting -- //
-bool compare_time(t_item* a, t_item* b, bool flag_reverse);
+bool compare_edit_time(t_item* a, t_item* b, bool flag_reverse);
 bool compare_name(t_item* a, t_item* b, bool flag_reverse);
 bool no_sort(t_item* a, t_item* b, bool flag_reverse);
 // --  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -- //
