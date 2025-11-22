@@ -164,8 +164,8 @@ void display_item_stats(t_item *file, bool flag_list, t_list_padding padding, ch
 		ft_putchar_fd(' ', 1); /* Date */
 		time_display(item_stat.st_mtim);
 
-		ft_putstr_fd(" ", 1); /* File name */
-		ft_putstr_fd(file->pathname, 1);
+		ft_putchar_fd(' ', 1); /* File name */
+		put_colored_name(file);
 		if (S_ISLNK(item_stat.st_mode))
 		{
 			ft_putstr_fd(" -> ", 1);
@@ -181,7 +181,18 @@ void display_item_stats(t_item *file, bool flag_list, t_list_padding padding, ch
 				perror(link_path);
 				return; // todo : error ?
 			}
-			ft_putstr_fd(link_result, 1);
+			struct stat target_item_stat ;
+			if (stat(link_result, &target_item_stat) == -1) {
+				ft_putstr_fd("\033[31;1m", 1);
+				ft_putstr_fd(link_result, 2);
+				ft_putstr_fd("\033[0m", 1);
+			}
+			else {
+				t_item result_item = {0};
+				result_item.item_stat = target_item_stat;
+				ft_memcpy(result_item.pathname, link_result, strlen(link_result));
+				put_colored_name(&result_item);
+			}
 		}
 	}
 }

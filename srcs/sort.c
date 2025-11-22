@@ -56,7 +56,7 @@ void sort_items_merge(t_list** lst, compare_func compare, bool flag_reverse) {
 	}
 }
 
-bool compare_time(t_item* a, t_item* b, bool flag_reverse)
+bool compare_edit_time(t_item* a, t_item* b, bool flag_reverse)
 {
 	long int const a_sec = a->item_stat.st_mtim.tv_sec;
 	long int const b_sec = b->item_stat.st_mtim.tv_sec;

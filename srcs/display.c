@@ -24,11 +24,11 @@ static void display_items(char pathname[4096], const t_flags flags, t_list* item
 		ft_bzero(column_size, sizeof(size_t) * (nb_of_item + 1));
 		size_t nb_of_line = 1;
 		const size_t nb_column = calc_column_size(items_to_print, nb_of_item, column_size, &nb_of_line);
-		char *items_names[nb_of_item + 1];
+		t_item *items_names[nb_of_item + 1];
 		size_t i = 0;
 		while (items_to_print)
 		{
-			items_names[i] = ((t_item*)items_to_print->content)->pathname;
+			items_names[i] = items_to_print->content;
 			items_to_print = items_to_print->next;
 			i++;
 		}
@@ -42,17 +42,17 @@ static void display_items(char pathname[4096], const t_flags flags, t_list* item
 				const size_t index = current_line + current_column * nb_of_line;
 				if (index < nb_of_item)
 				{
-					ft_putstr_fd(items_names[index], 1);
+					put_colored_name(items_names[index]);
 					if (column_size[current_column + 1] != 0)
 						{
-						const size_t padding_size = column_size[current_column] - ft_strlen(items_names[index]);
+						const size_t padding_size = column_size[current_column] - ft_strlen(items_names[index]->pathname);
 						for (size_t _ = 0; _ < padding_size; _++ )
-							write(1, " ", 1);
+							ft_putchar_fd(' ', 1);
 					}
 				}
 				current_column++;
 			}
-			write(1, "\n", 1);
+			ft_putchar_fd('\n', 1);
 			current_line++;
 		}
 	}
@@ -142,4 +142,15 @@ void display_ls(t_ls_lst_parms chain_items, const t_flags flags)
 			dir = dir->next;
 		}
 	}
+}
+
+void put_colored_name(t_item *item) {
+	if (S_ISLNK(item->item_stat.st_mode))
+		write(1, "\033[1;36m", 7);
+	else if (S_ISDIR(item->item_stat.st_mode))
+		write(1, "\033[1;34m", 7);
+	else if (S_IXGRP & item->item_stat.st_mode || S_IXGRP & item->item_stat.st_mode || S_IXGRP & item->item_stat.st_mode)
+		write(1, "\033[1;32m", 7);
+	ft_putstr_fd(item->pathname, 1);
+	write(1, "\033[0m", 4);
 }
